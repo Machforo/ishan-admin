@@ -2,7 +2,7 @@ export interface Field {
   key: string;
   type: 'text' | 'textarea' | 'image' | 'array' | 'object' | 'number' | 'date' | 'select' | 'boolean';
   label: string;
-  fields?: any[]; // For array/object types
+  fields?: (string | Field)[]; // For array/object types
   options?: { label: string; value: string }[]; // For select type
 }
 
@@ -11,7 +11,7 @@ export interface Section {
   title: string;
   endpoint: string; // The API endpoint for this section
   type: 'singleton' | 'collection';
-  fields: Field[];
+  fields: (string | Field)[];
   redirect?: {
     targetPage: string;
     targetSection: string;
