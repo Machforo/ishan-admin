@@ -5,11 +5,7 @@ import {
   UserPlus, 
   Trash2, 
   Globe, 
-  Layout, 
   Check, 
-  X,
-  AlertCircle,
-  Settings2
 } from 'lucide-react';
 import { siteConfigs } from '../config/siteConfigs';
 
@@ -30,7 +26,6 @@ interface SystemUser {
 
 const RoleManagement = () => {
   const [users, setUsers] = useState<SystemUser[]>([]);
-  const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   
   // New user form
@@ -46,8 +41,6 @@ const RoleManagement = () => {
       setUsers(response.data);
     } catch (err) {
       console.error('Error fetching users:', err);
-    } finally {
-      setLoading(false);
     }
   };
 

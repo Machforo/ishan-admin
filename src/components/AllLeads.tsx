@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Mail, Search, Filter, Download, ExternalLink, RefreshCw } from 'lucide-react';
+import { Search, Filter, Download, ExternalLink, RefreshCw } from 'lucide-react';
 
 interface Lead {
   _id: string;

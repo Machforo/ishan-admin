@@ -335,11 +335,14 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
           </div>
           
           <div className="space-y-6">
-            {section.fields.map(field => (
-              <div key={field.key}>
-                {renderField(field, editForm?.[field.key], (v) => setEditForm({ ...editForm, [field.key]: v }))}
-              </div>
-            ))}
+            {section.fields.map(f => {
+              const field = typeof f === 'string' ? { key: f, label: f.replace(/([A-Z])/g, ' $1'), type: 'text' } as Field : f;
+              return (
+                <div key={field.key}>
+                  {renderField(field, editForm?.[field.key], (v) => setEditForm({ ...editForm, [field.key]: v }))}
+                </div>
+              );
+            })}
           </div>
           
           <div className="flex justify-end gap-3 pt-4 border-t border-slate-50">
@@ -399,16 +402,19 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
 
       {section.type === 'singleton' && data && (
         <div className="space-y-10">
-          {section.fields.map(field => (
-            <div key={field.key} className="bg-white/70 backdrop-blur-md border border-white/20 shadow-xl p-10 rounded-[2.5rem] relative overflow-hidden group">
-              <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
-                <div className="w-32 h-32 rounded-full border-[8px] border-slate-900" />
+          {section.fields.map(f => {
+            const field = typeof f === 'string' ? { key: f, label: f.replace(/([A-Z])/g, ' $1'), type: 'text' } as Field : f;
+            return (
+              <div key={field.key} className="bg-white/70 backdrop-blur-md border border-white/20 shadow-xl p-10 rounded-[2.5rem] relative overflow-hidden group">
+                <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
+                  <div className="w-32 h-32 rounded-full border-[8px] border-slate-900" />
+                </div>
+                <div className="relative">
+                  {renderField(field, data[field.key], (v) => setData({ ...data, [field.key]: v }))}
+                </div>
               </div>
-              <div className="relative">
-                {renderField(field, data[field.key], (v) => setData({ ...data, [field.key]: v }))}
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 

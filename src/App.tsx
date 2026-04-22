@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { 
   BarChart3, 
   Users, 
   LayoutDashboard, 
-  Bell,
   Search,
   Plus,
   Mail,
