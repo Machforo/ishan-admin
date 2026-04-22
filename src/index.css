@@ -1,0 +1,66 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: #f8fafc;
+  --color-foreground: #0f172a;
+  
+  --color-primary: #1a337e;
+  --color-primary-foreground: #ffffff;
+  
+  --color-secondary: #f1f5f9;
+  --color-secondary-foreground: #1e293b;
+  
+  --color-accent: #f59e0b;
+  --color-accent-foreground: #ffffff;
+  
+  --color-navy: #1a337e;
+  --color-navy-dark: #0f172a;
+  --color-navy-light: #2a4a9e;
+  
+  --color-gold: #fbbf24;
+  --color-gold-dark: #d97706;
+  --color-gold-light: #fcd34d;
+
+  --shadow-glass: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+  --shadow-premium: 0 10px 40px -10px rgba(0, 0, 0, 0.1);
+}
+
+@layer base {
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-white/70 backdrop-blur-md border border-white/20 shadow-glass;
+  }
+  
+  .sidebar-link {
+    @apply flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-slate-400 font-medium hover:text-white hover:bg-white/10;
+  }
+  
+  .sidebar-link-active {
+    @apply flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 font-medium text-white bg-white/15 shadow-sm;
+  }
+
+  .btn-primary {
+    @apply bg-navy text-white px-6 py-2.5 rounded-xl font-semibold hover:bg-navy-light transition-all shadow-premium hover:-translate-y-0.5 active:translate-y-0;
+  }
+
+  .input-field {
+    @apply w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-navy/20 focus:border-navy outline-none transition-all;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-200 rounded-full hover:bg-slate-300;
+}
