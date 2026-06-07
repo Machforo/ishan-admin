@@ -23,7 +23,7 @@ const AllLeads = () => {
   const fetchLeads = async () => {
     setLoading(true);
     try {
-      const response = await axios.get('https://ishan-backend-g096.onrender.com/api/leads/all', {
+      const response = await axios.get('http://localhost:5000/api/leads/all', {
         headers: { Authorization: `Bearer ${localStorage.getItem('ishan_admin_token')}` }
       });
       setLeads(response.data);
@@ -39,7 +39,7 @@ const AllLeads = () => {
   }, []);
 
   const filteredLeads = leads.filter(lead => {
-    const matchesSearch = 
+    const matchesSearch =
       lead.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       lead.email.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesSite = filterSite === 'all' || lead.site === filterSite;
@@ -54,7 +54,7 @@ const AllLeads = () => {
           <p className="text-slate-500 mt-1 uppercase text-[10px] font-bold tracking-[0.2em]">Cross-Institutional Enquiry Management</p>
         </div>
         <div className="flex gap-3">
-          <button 
+          <button
             onClick={fetchLeads}
             className="p-2.5 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-all shadow-sm"
           >
@@ -70,9 +70,9 @@ const AllLeads = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="relative group">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-          <input 
-            type="text" 
-            placeholder="Search by name or email..." 
+          <input
+            type="text"
+            placeholder="Search by name or email..."
             className="w-full bg-white border border-slate-100 rounded-2xl pl-12 pr-4 py-3 text-sm outline-none focus:ring-2 focus:ring-slate-200 transition-all font-medium"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -81,7 +81,7 @@ const AllLeads = () => {
 
         <div className="relative group">
           <Filter className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-          <select 
+          <select
             className="w-full bg-white border border-slate-100 rounded-2xl pl-12 pr-4 py-3 text-sm outline-none focus:ring-2 focus:ring-slate-200 transition-all font-bold appearance-none"
             value={filterSite}
             onChange={(e) => setFilterSite(e.target.value)}

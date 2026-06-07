@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import api from '../api';
-import { 
-  Save, 
-  Plus, 
-  Trash2, 
-  Loader2, 
-  CheckCircle2, 
-  AlertCircle, 
+import {
+  Save,
+  Plus,
+  Trash2,
+  Loader2,
+  CheckCircle2,
+  AlertCircle,
   ExternalLink,
   ChevronRight,
   Edit2,
@@ -24,11 +24,11 @@ interface GenericEditorProps {
 
 const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section, onNavigate }) => {
   const { user } = useAuth();
-  const [data, setData] = useState<any>(null); 
+  const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
-  
+
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<any>(null);
 
@@ -127,13 +127,13 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
 
   const renderField = (field: Field, value: any, onChange: (val: any) => void) => {
     const label = <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1.5">{field.label}</label>;
-    
+
     switch (field.type) {
       case 'textarea':
         return (
           <div className="space-y-1">
             {label}
-            <textarea 
+            <textarea
               readOnly={!canUpdate}
               className={`w-full bg-white/50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-slate-900/5 focus:border-slate-400 outline-none transition-all min-h-[120px] resize-none ${!canUpdate ? 'opacity-70 cursor-not-allowed' : ''}`}
               value={value || ""}
@@ -146,8 +146,8 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
           <div className="space-y-1">
             {label}
             <div className="flex gap-4 items-start">
-              <input 
-                type="text" 
+              <input
+                type="text"
                 placeholder="Image URL..."
                 readOnly={!canUpdate}
                 className={`flex-1 w-full bg-white/50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-slate-900/5 transition-all ${!canUpdate ? 'opacity-70 cursor-not-allowed' : ''}`}
@@ -162,8 +162,8 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
         return (
           <div className="space-y-1">
             {label}
-            <input 
-              type="date" 
+            <input
+              type="date"
               readOnly={!canUpdate}
               className={`w-full bg-white/50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-slate-900/5 transition-all ${!canUpdate ? 'opacity-70 cursor-not-allowed' : ''}`}
               value={value ? new Date(value).toISOString().split('T')[0] : ""}
@@ -178,7 +178,7 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
             <div className="flex items-center justify-between">
               {label}
               {canUpdate && (
-                <button 
+                <button
                   onClick={() => onChange([...items, {}])}
                   className="text-[10px] font-black uppercase text-slate-500 hover:text-slate-900 flex items-center gap-1.5"
                 >
@@ -190,7 +190,7 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
               {items.map((item: any, idx: number) => (
                 <div key={idx} className="p-4 bg-slate-50/50 rounded-2xl border border-slate-100 relative group">
                   {canDelete && (
-                    <button 
+                    <button
                       onClick={() => onChange(items.filter((_: any, i: number) => i !== idx))}
                       className="absolute top-4 right-4 text-slate-300 hover:text-rose-500"
                     >
@@ -233,8 +233,8 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
         return (
           <div className="space-y-1">
             {label}
-            <input 
-              type={field.type === 'number' ? 'number' : 'text'} 
+            <input
+              type={field.type === 'number' ? 'number' : 'text'}
               readOnly={!canUpdate}
               className={`w-full bg-white/50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-slate-900/5 transition-all font-medium ${!canUpdate ? 'opacity-70 cursor-not-allowed' : ''}`}
               value={value || ""}
@@ -264,7 +264,7 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
           <h2 className="text-2xl font-bold text-slate-900">{section.title}</h2>
           <p className="text-slate-500 mt-2 max-w-md mx-auto">{section.redirect.message}</p>
         </div>
-        <button 
+        <button
           onClick={() => onNavigate(section.redirect!.targetPage, section.redirect!.targetSection)}
           className="bg-slate-900 text-white px-8 py-3 rounded-2xl font-bold hover:bg-slate-800 transition-all flex items-center gap-2 mx-auto"
         >
@@ -283,9 +283,8 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
       )}
 
       {status && (
-        <div className={`p-4 rounded-2xl flex items-center gap-3 animate-in fade-in zoom-in duration-300 ${
-          status.type === 'success' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-rose-50 text-rose-700 border border-rose-100'
-        }`}>
+        <div className={`p-4 rounded-2xl flex items-center gap-3 animate-in fade-in zoom-in duration-300 ${status.type === 'success' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-rose-50 text-rose-700 border border-rose-100'
+          }`}>
           {status.type === 'success' ? <CheckCircle2 className="w-5 h-5" /> : <AlertCircle className="w-5 h-5" />}
           <p className="text-xs font-black uppercase tracking-widest">{status.message}</p>
         </div>
@@ -296,9 +295,9 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
           <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tight">{section.title}</h1>
           <p className="text-slate-400 text-xs font-bold uppercase tracking-widest mt-1">Management Mode</p>
         </div>
-        
+
         {section.type === 'singleton' && canUpdate && (
-          <button 
+          <button
             onClick={handleSaveSingleton}
             disabled={saving}
             className="bg-slate-900 text-white px-8 py-2.5 rounded-xl font-bold hover:bg-slate-800 transition-all flex items-center gap-2 disabled:opacity-50"
@@ -307,9 +306,9 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
             {saving ? 'Syncing...' : 'Save Changes'}
           </button>
         )}
-        
+
         {section.type === 'collection' && !editingId && !editForm && canCreate && (
-          <button 
+          <button
             onClick={() => {
               setEditingId(null);
               setEditForm({});
@@ -326,14 +325,14 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
         <div className="bg-white rounded-[2rem] shadow-2xl border border-slate-100 p-8 space-y-8 animate-in slide-in-from-top-4 duration-300">
           <div className="flex items-center justify-between pb-4 border-b border-slate-50">
             <h3 className="font-black text-slate-900 uppercase tracking-widest">{editingId ? 'Edit Item' : 'Create New Item'}</h3>
-            <button 
+            <button
               onClick={() => { setEditingId(null); setEditForm(null); }}
               className="text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-slate-900"
             >
               Cancel
             </button>
           </div>
-          
+
           <div className="space-y-6">
             {section.fields.map(f => {
               const field = typeof f === 'string' ? { key: f, label: f.replace(/([A-Z])/g, ' $1'), type: 'text' } as Field : f;
@@ -344,9 +343,9 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
               );
             })}
           </div>
-          
+
           <div className="flex justify-end gap-3 pt-4 border-t border-slate-50">
-            <button 
+            <button
               onClick={editingId ? handleUpdateItem : handleAddItem}
               disabled={saving || (editingId ? !canUpdate : !canCreate)}
               className="bg-slate-900 text-white px-8 py-2.5 rounded-xl font-bold hover:bg-slate-800 transition-all flex items-center gap-2 disabled:opacity-50"
@@ -364,18 +363,18 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
             <div key={item._id} className="bg-white/70 backdrop-blur-md border border-white/20 p-6 rounded-[2rem] shadow-xl hover:-translate-y-1 transition-all group overflow-hidden">
               <div className="flex justify-between items-start mb-4">
                 <div className="space-y-1 pr-4">
-                  <h4 className="font-bold text-slate-900 line-clamp-1">{item.programName || item.title || 'Untitled'}</h4>
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{item.date ? new Date(item.date).toLocaleDateString() : 'Active Content'}</p>
+                  <h4 className="font-bold text-slate-900 line-clamp-1">{item.programName || item.title || item.name || 'Untitled'}</h4>
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{item.date ? new Date(item.date).toLocaleDateString() : (item.createdAt ? new Date(item.createdAt).toLocaleDateString() : 'Active Content')}</p>
                 </div>
                 <div className="flex gap-2">
-                  <button 
+                  <button
                     onClick={() => { setEditingId(item._id); setEditForm(item); }}
                     className="p-2.5 bg-slate-50 text-slate-500 rounded-xl hover:bg-slate-900 hover:text-white transition-all shadow-sm"
                   >
                     {canUpdate ? <Edit2 className="w-4 h-4" /> : <Loader2 className="w-4 h-4" />}
                   </button>
                   {canDelete && (
-                    <button 
+                    <button
                       onClick={(e) => handleDeleteItem(item._id, e)}
                       className="p-2.5 bg-slate-50 text-rose-500 rounded-xl hover:bg-rose-500 hover:text-white transition-all shadow-sm"
                     >
@@ -384,7 +383,7 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
                   )}
                 </div>
               </div>
-              
+
               <div className="h-[1px] bg-slate-100 my-4" />
               <div className="space-y-2 opacity-60">
                 <div className="w-full h-1 bg-slate-100 rounded-full" />
@@ -431,7 +430,7 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
           return (
             <>
               {prev ? (
-                <button 
+                <button
                   onClick={() => onNavigate(pageId, prev.id)}
                   className="flex flex-col items-start gap-1 group"
                 >
@@ -446,7 +445,7 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
               ) : <div />}
 
               {next ? (
-                <button 
+                <button
                   onClick={() => onNavigate(pageId, next.id)}
                   className="flex flex-col items-end gap-1 group text-right"
                 >

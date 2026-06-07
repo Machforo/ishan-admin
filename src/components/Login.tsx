@@ -15,7 +15,7 @@ const Login = () => {
     setLoading(true);
     setError('');
     try {
-      const response = await axios.post('https://ishan-backend-g096.onrender.com/api/auth/login', { email, password });
+      const response = await axios.post('http://localhost:5000/api/auth/login', { email, password });
       login(response.data.token, response.data.user);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Login failed. Please check credentials.');
@@ -27,7 +27,7 @@ const Login = () => {
   return (
     <div className="min-h-screen bg-[#f3f4f6] flex items-center justify-center p-6 bg-[url('https://images.unsplash.com/photo-1541339907198-e08756ebafe3?auto=format&fit=crop&q=80&w=2000')] bg-cover bg-center">
       <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" />
-      
+
       <div className="w-full max-w-md relative animate-in fade-in zoom-in duration-500">
         <div className="bg-white/80 backdrop-blur-xl border border-white/20 shadow-2xl rounded-[2.5rem] p-10 space-y-8">
           {/* Logo/Header */}
@@ -49,8 +49,8 @@ const Login = () => {
             <div className="space-y-4">
               <div className="relative group">
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-slate-900 transition-colors" />
-                <input 
-                  type="email" 
+                <input
+                  type="email"
                   placeholder="Email Address"
                   className="w-full bg-slate-100/50 border border-transparent focus:border-slate-200 focus:bg-white rounded-2xl px-12 py-4 text-sm outline-none transition-all font-medium"
                   value={email}
@@ -61,8 +61,8 @@ const Login = () => {
 
               <div className="relative group">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-slate-900 transition-colors" />
-                <input 
-                  type="password" 
+                <input
+                  type="password"
                   placeholder="Password"
                   className="w-full bg-slate-100/50 border border-transparent focus:border-slate-200 focus:bg-white rounded-2xl px-12 py-4 text-sm outline-none transition-all font-medium"
                   value={password}
@@ -72,7 +72,7 @@ const Login = () => {
               </div>
             </div>
 
-            <button 
+            <button
               type="submit"
               disabled={loading}
               className="w-full bg-slate-900 text-white py-4 rounded-2xl font-black uppercase tracking-widest hover:bg-slate-800 transition-all shadow-lg active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2"

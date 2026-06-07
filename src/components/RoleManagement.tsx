@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { 
-  Shield, 
-  UserPlus, 
-  Trash2, 
-  Globe, 
-  Check, 
+import {
+  Shield,
+  UserPlus,
+  Trash2,
+  Globe,
+  Check,
 } from 'lucide-react';
 import { siteConfigs } from '../config/siteConfigs';
 
@@ -27,7 +27,7 @@ interface SystemUser {
 const RoleManagement = () => {
   const [users, setUsers] = useState<SystemUser[]>([]);
   const [showAddModal, setShowAddModal] = useState(false);
-  
+
   // New user form
   const [newEmail, setNewEmail] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -35,7 +35,7 @@ const RoleManagement = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get('https://ishan-backend-g096.onrender.com/api/users', {
+      const response = await axios.get('http://localhost:5000/api/users', {
         headers: { Authorization: `Bearer ${localStorage.getItem('ishan_admin_token')}` }
       });
       setUsers(response.data);
@@ -51,7 +51,7 @@ const RoleManagement = () => {
   const handleAddUser = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await axios.post('https://ishan-backend-g096.onrender.com/api/users', {
+      await axios.post('http://localhost:5000/api/users', {
         email: newEmail,
         password: newPassword,
         role: newRole,
@@ -68,12 +68,12 @@ const RoleManagement = () => {
 
   const toggleSitePermission = async (user: SystemUser, siteKey: string) => {
     const hasSite = user.permissions.sites.includes(siteKey);
-    const updatedSites = hasSite 
+    const updatedSites = hasSite
       ? user.permissions.sites.filter(s => s !== siteKey)
       : [...user.permissions.sites, siteKey];
-      
+
     try {
-      await axios.put(`https://ishan-backend-g096.onrender.com/api/users/${user._id}`, {
+      await axios.put(`http://localhost:5000/api/users/${user._id}`, {
         permissions: { ...user.permissions, sites: updatedSites }
       }, {
         headers: { Authorization: `Bearer ${localStorage.getItem('ishan_admin_token')}` }
@@ -91,7 +91,7 @@ const RoleManagement = () => {
           <h1 className="text-3xl font-extrabold tracking-tight text-[#0f172a]">Role Management</h1>
           <p className="text-slate-500 mt-1 uppercase text-[10px] font-bold tracking-[0.2em]">Administrative Security Framework</p>
         </div>
-        <button 
+        <button
           onClick={() => setShowAddModal(true)}
           className="bg-slate-900 text-white px-6 py-3 rounded-2xl font-black uppercase tracking-widest hover:bg-slate-800 transition-all shadow-xl flex items-center gap-2"
         >
@@ -111,7 +111,7 @@ const RoleManagement = () => {
                   <div className="text-lg font-bold flex items-center gap-2">
                     {user.email}
                     {user.role === 'super_admin' && (
-                       <span className="text-[10px] bg-amber-100 text-amber-600 px-2 py-0.5 rounded-full font-black uppercase">Super Admin</span>
+                      <span className="text-[10px] bg-amber-100 text-amber-600 px-2 py-0.5 rounded-full font-black uppercase">Super Admin</span>
                     )}
                   </div>
                   <div className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">Role: {user.role}</div>
@@ -139,7 +139,7 @@ const RoleManagement = () => {
                 <Globe className="w-4 h-4 text-slate-400" />
                 <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">Institutional Access (Toggle)</h3>
               </div>
-              
+
               <div className="flex flex-wrap gap-3">
                 {Object.entries(siteConfigs).map(([key, config]) => (
                   <button
@@ -148,7 +148,7 @@ const RoleManagement = () => {
                     disabled={user.role === 'super_admin'}
                     className={`px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all
                       ${user.permissions.sites.includes(key) || user.role === 'super_admin'
-                        ? 'bg-slate-900 text-white shadow-lg' 
+                        ? 'bg-slate-900 text-white shadow-lg'
                         : 'bg-white border border-slate-200 text-slate-400 hover:border-slate-300'}`}
                   >
                     {config.name}
@@ -156,7 +156,7 @@ const RoleManagement = () => {
                 ))}
               </div>
             </div>
-            
+
             {user.role !== 'super_admin' && (
               <div className="flex justify-end mt-6">
                 <button className="text-rose-500 hover:text-rose-600 font-bold text-xs flex items-center gap-1">
@@ -180,23 +180,23 @@ const RoleManagement = () => {
 
             <form onSubmit={handleAddUser} className="space-y-6">
               <div className="space-y-4">
-                <input 
-                  type="email" 
+                <input
+                  type="email"
                   placeholder="Official Email"
                   className="w-full bg-slate-100 border-none rounded-2xl px-6 py-4 text-sm font-medium outline-none focus:ring-2 focus:ring-slate-200"
                   value={newEmail}
                   onChange={(e) => setNewEmail(e.target.value)}
                   required
                 />
-                <input 
-                  type="password" 
+                <input
+                  type="password"
                   placeholder="Master Password"
                   className="w-full bg-slate-100 border-none rounded-2xl px-6 py-4 text-sm font-medium outline-none focus:ring-2 focus:ring-slate-200"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   required
                 />
-                <select 
+                <select
                   className="w-full bg-slate-100 border-none rounded-2xl px-6 py-4 text-sm font-bold outline-none focus:ring-2 focus:ring-slate-200"
                   value={newRole}
                   onChange={(e) => setNewRole(e.target.value as any)}
@@ -207,14 +207,14 @@ const RoleManagement = () => {
               </div>
 
               <div className="pt-4 flex gap-3">
-                <button 
+                <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
                   className="flex-1 px-6 py-4 rounded-2xl text-xs font-black uppercase bg-slate-100 text-slate-500 hover:bg-slate-200 transition-all"
                 >
                   Abadon
                 </button>
-                <button 
+                <button
                   type="submit"
                   className="flex-2 px-10 py-4 rounded-2xl text-xs font-black uppercase bg-slate-900 text-white hover:bg-slate-800 transition-all"
                 >
