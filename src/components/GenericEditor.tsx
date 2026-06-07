@@ -38,8 +38,8 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
   const canCreate = user?.role === 'super_admin' || user?.permissions.canCreate;
 
   // Build URL without a leading slash so axios appends correctly to the baseURL
-  // e.g. baseURL='http://localhost:5000/api' + 'landing1/' = correct
-  // A leading '/' would bypass baseURL and hit http://localhost:5000/landing1/ (wrong)
+  // e.g. baseURL='https://ishan-backend-g096.onrender.com/api' + 'landing1/' = correct
+  // A leading '/' would bypass baseURL and hit https://ishan-backend-g096.onrender.com/landing1/ (wrong)
   const buildUrl = (ep?: string, suffix = '') => {
     const base = ep ? `${siteKey}/${ep}` : `${siteKey}/`;
     return suffix ? `${base}/${suffix}` : base;
