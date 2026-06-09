@@ -73,10 +73,24 @@ const RoleManagement = () => {
       : [...user.permissions.sites, siteKey];
 
     try {
-      await axios.put(`https://ishan-backend-g096.onrender.com/api/users/${user._id}`, {
+      await api.put(`/users/${user._id}`, {
         permissions: { ...user.permissions, sites: updatedSites }
-      }, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('ishan_admin_token')}` }
+      });
+      fetchUsers();
+    } catch (err) {
+      console.error('Error updating permissions:', err);
+    }
+  };
+
+  const toggleSectionPermission = async (user: SystemUser, sectionKey: string) => {
+    const hasSection = user.permissions.sections?.includes(sectionKey);
+    const updatedSections = hasSection
+      ? (user.permissions.sections || []).filter(s => s !== sectionKey)
+      : [...(user.permissions.sections || []), sectionKey];
+
+    try {
+      await api.put(`/users/${user._id}`, {
+        permissions: { ...user.permissions, sections: updatedSections }
       });
       fetchUsers();
     } catch (err) {
@@ -140,20 +154,56 @@ const RoleManagement = () => {
                 <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">Institutional Access (Toggle)</h3>
               </div>
 
-              <div className="flex flex-wrap gap-3">
-                {Object.entries(siteConfigs).map(([key, config]) => (
-                  <button
-                    key={key}
-                    onClick={() => user.role !== 'super_admin' && toggleSitePermission(user, key)}
-                    disabled={user.role === 'super_admin'}
-                    className={`px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all
-                      ${user.permissions.sites.includes(key) || user.role === 'super_admin'
-                        ? 'bg-slate-900 text-white shadow-lg'
-                        : 'bg-white border border-slate-200 text-slate-400 hover:border-slate-300'}`}
-                  >
-                    {config.name}
-                  </button>
-                ))}
+              <div className="flex flex-col gap-4">
+                {Object.entries(siteConfigs).map(([siteKey, config]) => {
+                  const hasSite = user.permissions.sites.includes(siteKey) || user.role === 'super_admin';
+                  const allSections = config.pages.flatMap(p => p.sections);
+                  
+                  return (
+                    <div key={siteKey} className="border border-slate-100 rounded-2xl p-5 bg-slate-50/50">
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-3">
+                          <Globe className="w-5 h-5 text-amber-500" />
+                          <h4 className="font-bold text-slate-900">{config.name}</h4>
+                        </div>
+                        <button
+                          onClick={() => user.role !== 'super_admin' && toggleSitePermission(user, siteKey)}
+                          disabled={user.role === 'super_admin'}
+                          className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all
+                            ${hasSite
+                              ? 'bg-emerald-100 text-emerald-700'
+                              : 'bg-white border border-slate-200 text-slate-400 hover:border-slate-300'}`}
+                        >
+                          {hasSite ? 'Full Access Granted' : 'Grant Full Access'}
+                        </button>
+                      </div>
+
+                      {!hasSite && (
+                        <div className="mt-4 pt-4 border-t border-slate-200">
+                          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">Or grant specific section access:</p>
+                          <div className="flex flex-wrap gap-2">
+                            {allSections.map(section => {
+                              const sectionKey = `${siteKey}:${section.id}`;
+                              const hasSection = user.permissions.sections?.includes(sectionKey);
+                              return (
+                                <button
+                                  key={section.id}
+                                  onClick={() => toggleSectionPermission(user, sectionKey)}
+                                  className={`px-3 py-2 rounded-lg text-[10px] font-bold uppercase transition-all border
+                                    ${hasSection
+                                      ? 'bg-slate-900 text-white border-slate-900 shadow-md'
+                                      : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50 hover:border-slate-300'}`}
+                                >
+                                  {section.title}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </div>
 

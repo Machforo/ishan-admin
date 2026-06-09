@@ -10,7 +10,8 @@ import {
   ExternalLink,
   ChevronRight,
   Edit2,
-  Lock
+  Lock,
+  UploadCloud
 } from 'lucide-react';
 import { siteConfigs, type Section, type Field } from '../config/siteConfigs';
 import { useAuth } from '../context/AuthContext';
@@ -31,6 +32,39 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
 
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<any>(null);
+
+  const [uploadingImage, setUploadingImage] = useState<string | null>(null);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, onChange: (val: string) => void, fieldKey: string) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || 'dt7mmeqba';
+    const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || 'ishan_images';
+
+    setUploadingImage(fieldKey);
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', uploadPreset);
+
+    try {
+      const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await response.json();
+      if (data.secure_url) {
+        onChange(data.secure_url);
+      } else {
+        setStatus({ type: 'error', message: 'Failed to upload image.' });
+      }
+    } catch (err) {
+      console.error('Upload error:', err);
+      setStatus({ type: 'error', message: 'Failed to upload image.' });
+    } finally {
+      setUploadingImage(null);
+    }
+  };
 
   // Permission flags
   const canUpdate = user?.role === 'super_admin' || user?.permissions.canUpdate;
@@ -146,15 +180,40 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
           <div className="space-y-1">
             {label}
             <div className="flex gap-4 items-start">
-              <input
-                type="text"
-                placeholder="Image URL..."
-                readOnly={!canUpdate}
-                className={`flex-1 w-full bg-white/50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-slate-900/5 transition-all ${!canUpdate ? 'opacity-70 cursor-not-allowed' : ''}`}
-                value={value || ""}
-                onChange={(e) => onChange(e.target.value)}
-              />
-              {value && <img src={value} alt="Preview" className="w-12 h-12 rounded-lg object-cover border border-slate-100 shadow-sm" />}
+              <div className="flex-1 space-y-3">
+                <input
+                  type="text"
+                  placeholder="Image URL..."
+                  readOnly={!canUpdate}
+                  className={`w-full bg-white/50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-slate-900/5 transition-all ${!canUpdate ? 'opacity-70 cursor-not-allowed' : ''}`}
+                  value={value || ""}
+                  onChange={(e) => onChange(e.target.value)}
+                />
+                {canUpdate && (
+                  <div className="relative">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleImageUpload(e, onChange, field.key)}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                      disabled={uploadingImage === field.key}
+                    />
+                    <div className="flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-600 px-4 py-2.5 rounded-xl text-sm font-bold transition-all border border-slate-200 border-dashed">
+                      {uploadingImage === field.key ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <UploadCloud className="w-4 h-4" />
+                      )}
+                      {uploadingImage === field.key ? 'Uploading...' : 'Upload Image'}
+                    </div>
+                  </div>
+                )}
+              </div>
+              {value && (
+                <div className="w-24 h-24 shrink-0 rounded-xl overflow-hidden border border-slate-200 shadow-sm bg-slate-50 relative group">
+                  <img src={value} alt="Preview" className="w-full h-full object-cover" />
+                </div>
+              )}
             </div>
           </div>
         );

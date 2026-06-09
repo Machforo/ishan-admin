@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { Search, Filter, Download, ExternalLink, RefreshCw } from 'lucide-react';
 
 interface Lead {
@@ -23,9 +23,7 @@ const AllLeads = () => {
   const fetchLeads = async () => {
     setLoading(true);
     try {
-      const response = await axios.get('https://ishan-backend-g096.onrender.com/api/leads/all', {
-        headers: { Authorization: `Bearer ${localStorage.getItem('ishan_admin_token')}` }
-      });
+      const response = await api.get('/leads/all');
       setLeads(response.data);
     } catch (err) {
       console.error('Error fetching leads:', err);

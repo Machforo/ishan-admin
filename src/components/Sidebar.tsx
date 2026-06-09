@@ -47,9 +47,19 @@ const Sidebar: React.FC<SidebarProps> = ({
   if (!user) return null;
 
   // Filter sites based on permissions
-  const permittedSites = Object.entries(sites).filter(([key]) => 
-    user.role === 'super_admin' || user.permissions.sites.includes(key)
-  );
+  const hasSiteAccess = (siteKey: string) => {
+    if (user.role === 'super_admin') return true;
+    if (user.permissions.sites?.includes(siteKey)) return true;
+    return user.permissions.sections?.some(s => s.startsWith(`${siteKey}:`));
+  };
+
+  const hasSectionAccess = (siteKey: string, sectionId: string) => {
+    if (user.role === 'super_admin') return true;
+    if (user.permissions.sites?.includes(siteKey)) return true;
+    return user.permissions.sections?.includes(`${siteKey}:${sectionId}`);
+  };
+
+  const permittedSites = Object.entries(sites).filter(([key]) => hasSiteAccess(key));
 
   return (
     <aside className="w-72 bg-[#0f172a] text-white p-6 flex flex-col fixed h-full z-50 border-r border-white/5">
@@ -136,7 +146,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
                     {expandedPage === page.id && page.sections && (
                       <div className="ml-2 pl-3 border-l border-white/5 space-y-0.5 py-1">
-                        {page.sections.map((section) => (
+                        {page.sections.filter(s => hasSectionAccess(siteKey, s.id)).map((section) => (
                           <button
                             key={section.id}
                             onClick={() => onSelectSection(section.id)}
@@ -192,7 +202,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
                     {expandedPage === page.id && page.sections && (
                       <div className="ml-2 pl-3 border-l border-white/5 space-y-0.5 py-1">
-                        {page.sections.map((section) => (
+                        {page.sections.filter(s => hasSectionAccess(siteKey, s.id)).map((section) => (
                           <button
                             key={section.id}
                             onClick={() => onSelectSection(section.id)}
