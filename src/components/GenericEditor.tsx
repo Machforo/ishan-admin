@@ -32,6 +32,7 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
 
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<any>(null);
+  const [broadcastSites, setBroadcastSites] = useState<string[]>([]);
 
   const [uploadingImage, setUploadingImage] = useState<string | null>(null);
 
@@ -87,6 +88,7 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
       setData(response.data);
       setEditingId(null);
       setEditForm(null);
+      setBroadcastSites([]);
     } catch (err) {
       console.error('Error fetching section data:', err);
       setStatus({ type: 'error', message: 'Failed to load section data.' });
@@ -114,15 +116,48 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
     }
   };
 
+  const getBroadcastableSites = () => {
+    if (section.type !== 'collection' || !section.endpoint.includes('news')) return [];
+
+    const broadcastable: { siteKey: string, siteName: string, endpoint: string }[] = [];
+
+    Object.entries(siteConfigs).forEach(([key, config]) => {
+      if (key === siteKey) return;
+      if (user?.role !== 'super_admin' && !user?.permissions.sites.includes(key)) return;
+
+      let targetEndpoint = 'news';
+      if (key === 'iimt') targetEndpoint = 'newsevents';
+
+      broadcastable.push({ siteKey: key, siteName: config.name, endpoint: targetEndpoint });
+    });
+
+    return broadcastable;
+  };
+
   const handleAddItem = async () => {
     if (!canCreate) return;
     setSaving(true);
     try {
       const response = await api.post(buildUrl(section.endpoint), editForm);
       setData([response.data, ...data]);
+
+      if (broadcastSites.length > 0) {
+        const broadcastable = getBroadcastableSites();
+        for (const bSite of broadcastable) {
+          if (broadcastSites.includes(bSite.siteKey)) {
+            try {
+              await api.post(`${bSite.siteKey}/${bSite.endpoint}`, editForm);
+            } catch (e) {
+              console.error(`Broadcast failed for ${bSite.siteKey}`, e);
+            }
+          }
+        }
+      }
+
       setEditingId(null);
       setEditForm(null);
-      setStatus({ type: 'success', message: 'Item added successfully!' });
+      setBroadcastSites([]);
+      setStatus({ type: 'success', message: 'Item added successfully!' + (broadcastSites.length ? ' Broadcasted to selected portals.' : '') });
     } catch (err) {
       setStatus({ type: 'error', message: 'Failed to add item.' });
     } finally {
@@ -403,7 +438,31 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
             })}
           </div>
 
-          <div className="flex justify-end gap-3 pt-4 border-t border-slate-50">
+          {!editingId && getBroadcastableSites().length > 0 && (
+            <div className="pt-6 border-t border-slate-50 space-y-4">
+              <div>
+                <h4 className="text-xs font-black uppercase tracking-widest text-slate-800">Broadcast to other portals?</h4>
+                <p className="text-[10px] text-slate-400 font-bold mt-1">Select other websites to publish this item simultaneously.</p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {getBroadcastableSites().map(b => (
+                  <button
+                    key={b.siteKey}
+                    onClick={() => setBroadcastSites(prev => prev.includes(b.siteKey) ? prev.filter(k => k !== b.siteKey) : [...prev, b.siteKey])}
+                    className={`px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all border flex items-center gap-2 ${broadcastSites.includes(b.siteKey)
+                        ? 'bg-amber-100 border-amber-200 text-amber-700 shadow-sm'
+                        : 'bg-white border-slate-200 text-slate-400 hover:bg-slate-50 hover:text-slate-600 hover:border-slate-300'
+                      }`}
+                  >
+                    <div className={`w-2 h-2 rounded-full ${broadcastSites.includes(b.siteKey) ? 'bg-amber-500' : 'bg-slate-200'}`} />
+                    {b.siteName}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div className="flex justify-end gap-3 pt-6 border-t border-slate-50">
             <button
               onClick={editingId ? handleUpdateItem : handleAddItem}
               disabled={saving || (editingId ? !canUpdate : !canCreate)}

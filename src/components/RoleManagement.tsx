@@ -158,7 +158,7 @@ const RoleManagement = () => {
                 {Object.entries(siteConfigs).map(([siteKey, config]) => {
                   const hasSite = user.permissions.sites.includes(siteKey) || user.role === 'super_admin';
                   const allSections = config.pages.flatMap(p => p.sections);
-                  
+
                   return (
                     <div key={siteKey} className="border border-slate-100 rounded-2xl p-5 bg-slate-50/50">
                       <div className="flex items-center justify-between mb-4">
