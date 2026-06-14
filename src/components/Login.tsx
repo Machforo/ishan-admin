@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import axios from 'axios';
+import api from '../api';
 import { Lock, Mail, Loader2, AlertCircle, Building2 } from 'lucide-react';
 
 const Login = () => {
@@ -15,7 +15,7 @@ const Login = () => {
     setLoading(true);
     setError('');
     try {
-      const response = await axios.post('https://ishan-backend-g096.onrender.com/api/auth/login', { email, password });
+      const response = await api.post('/auth/login', { email, password });
       login(response.data.token, response.data.user);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Login failed. Please check credentials.');

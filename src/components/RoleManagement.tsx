@@ -36,9 +36,7 @@ const RoleManagement = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get('https://ishan-backend-g096.onrender.com/api/users', {
-        headers: { Authorization: `Bearer ${localStorage.getItem('ishan_admin_token')}` }
-      });
+      const response = await api.get('/users');
       setUsers(response.data);
     } catch (err) {
       console.error('Error fetching users:', err);
@@ -52,13 +50,11 @@ const RoleManagement = () => {
   const handleAddUser = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await axios.post('https://ishan-backend-g096.onrender.com/api/users', {
+      await api.post('/users', {
         email: newEmail,
         password: newPassword,
         role: newRole,
         permissions: { sites: [], sections: [], canCreate: true, canUpdate: true, canDelete: false }
-      }, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('ishan_admin_token')}` }
       });
       setShowAddModal(false);
       fetchUsers();
@@ -99,6 +95,17 @@ const RoleManagement = () => {
     }
   };
 
+  const toggleActionPermission = async (user: SystemUser, action: 'canCreate' | 'canUpdate' | 'canDelete') => {
+    try {
+      await api.put(`/users/${user._id}`, {
+        permissions: { ...user.permissions, [action]: !user.permissions[action] }
+      });
+      fetchUsers();
+    } catch (err) {
+      console.error('Error updating permissions:', err);
+    }
+  };
+
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
       <div className="flex items-center justify-between">
@@ -108,7 +115,7 @@ const RoleManagement = () => {
         </div>
         <button
           onClick={() => setShowAddModal(true)}
-          className="bg-slate-900 text-white px-6 py-3 rounded-2xl font-black uppercase tracking-widest hover:bg-slate-800 transition-all shadow-xl flex items-center gap-2"
+          className="bg-slate-900 text-white px-6 py-3 rounded-2xl font-semibold  hover:bg-slate-800 transition-all shadow-xl flex items-center gap-2"
         >
           <UserPlus className="w-5 h-5" /> Add New User
         </button>
@@ -126,38 +133,38 @@ const RoleManagement = () => {
                   <div className="text-lg font-bold flex items-center gap-2">
                     {user.email}
                     {user.role === 'super_admin' && (
-                      <span className="text-[10px] bg-amber-100 text-amber-600 px-2 py-0.5 rounded-full font-black uppercase">Super Admin</span>
+                      <span className="text-[10px] bg-amber-100 text-amber-600 px-2 py-0.5 rounded-full font-semibold uppercase">Super Admin</span>
                     )}
                   </div>
-                  <div className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">Role: {user.role}</div>
+                  <div className="text-xs text-slate-400 font-bold  mt-1">Role: {user.role}</div>
                 </div>
               </div>
 
               <div className="flex gap-4">
-                <div className="flex items-center gap-2 px-4 py-2 bg-slate-50 rounded-xl border border-slate-100">
-                  <Check className={`w-4 h-4 ${user.permissions.canCreate ? 'text-emerald-500' : 'text-slate-300'}`} />
-                  <span className="text-[10px] font-black tracking-widest uppercase text-slate-500">Create</span>
-                </div>
-                <div className="flex items-center gap-2 px-4 py-2 bg-slate-50 rounded-xl border border-slate-100">
-                  <Check className={`w-4 h-4 ${user.permissions.canUpdate ? 'text-emerald-500' : 'text-slate-300'}`} />
-                  <span className="text-[10px] font-black tracking-widest uppercase text-slate-500">Update</span>
-                </div>
-                <div className="flex items-center gap-2 px-4 py-2 bg-slate-50 rounded-xl border border-slate-100">
-                  <Check className={`w-4 h-4 ${user.permissions.canDelete ? 'text-emerald-500' : 'text-slate-300'}`} />
-                  <span className="text-[10px] font-black tracking-widest uppercase text-slate-500">Delete</span>
-                </div>
+                <label className="flex items-center gap-2 px-4 py-2 bg-slate-50 rounded-xl border border-slate-100 cursor-pointer hover:bg-slate-100">
+                  <input type="checkbox" checked={user.permissions.canCreate} onChange={() => toggleActionPermission(user, 'canCreate')} className="accent-emerald-500" />
+                  <span className="text-[10px] font-semibold tracking-widest uppercase text-slate-500">Create</span>
+                </label>
+                <label className="flex items-center gap-2 px-4 py-2 bg-slate-50 rounded-xl border border-slate-100 cursor-pointer hover:bg-slate-100">
+                  <input type="checkbox" checked={user.permissions.canUpdate} onChange={() => toggleActionPermission(user, 'canUpdate')} className="accent-emerald-500" />
+                  <span className="text-[10px] font-semibold tracking-widest uppercase text-slate-500">Update</span>
+                </label>
+                <label className="flex items-center gap-2 px-4 py-2 bg-slate-50 rounded-xl border border-slate-100 cursor-pointer hover:bg-slate-100">
+                  <input type="checkbox" checked={user.permissions.canDelete} onChange={() => toggleActionPermission(user, 'canDelete')} className="accent-rose-500" />
+                  <span className="text-[10px] font-semibold tracking-widest uppercase text-slate-500">Delete</span>
+                </label>
               </div>
             </div>
 
             <div className="border-t border-slate-100 pt-8">
               <div className="flex items-center gap-2 mb-4">
                 <Globe className="w-4 h-4 text-slate-400" />
-                <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">Institutional Access (Toggle)</h3>
+                <h3 className="text-xs font-semibold  text-slate-400">Institutional Access (Toggle)</h3>
               </div>
 
               <div className="flex flex-col gap-4">
                 {Object.entries(siteConfigs).map(([siteKey, config]) => {
-                  const hasSite = user.permissions.sites.includes(siteKey) || user.role === 'super_admin';
+                  const hasSite = user.permissions.sites.includes(siteKey);
                   const allSections = config.pages.flatMap(p => p.sections);
 
                   return (
@@ -167,36 +174,41 @@ const RoleManagement = () => {
                           <Globe className="w-5 h-5 text-amber-500" />
                           <h4 className="font-bold text-slate-900">{config.name}</h4>
                         </div>
-                        <button
-                          onClick={() => user.role !== 'super_admin' && toggleSitePermission(user, siteKey)}
-                          disabled={user.role === 'super_admin'}
-                          className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all
-                            ${hasSite
-                              ? 'bg-emerald-100 text-emerald-700'
-                              : 'bg-white border border-slate-200 text-slate-400 hover:border-slate-300'}`}
-                        >
-                          {hasSite ? 'Full Access Granted' : 'Grant Full Access'}
-                        </button>
+                        <label className="flex items-center gap-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={hasSite}
+                            onChange={() => toggleSitePermission(user, siteKey)}
+                            className="w-4 h-4 accent-emerald-500"
+                          />
+                          <span className="text-xs font-semibold  text-slate-500">Full Access</span>
+                        </label>
                       </div>
 
                       {!hasSite && (
                         <div className="mt-4 pt-4 border-t border-slate-200">
-                          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">Or grant specific section access:</p>
-                          <div className="flex flex-wrap gap-2">
+                          <p className="text-[10px] font-semibold  text-slate-400 mb-3">Or grant specific section access:</p>
+                          <div className="flex flex-wrap gap-3">
                             {allSections.map(section => {
                               const sectionKey = `${siteKey}:${section.id}`;
                               const hasSection = user.permissions.sections?.includes(sectionKey);
                               return (
-                                <button
+                                <label
                                   key={section.id}
-                                  onClick={() => toggleSectionPermission(user, sectionKey)}
-                                  className={`px-3 py-2 rounded-lg text-[10px] font-bold uppercase transition-all border
+                                  className={`flex items-center gap-2 px-3 py-2 rounded-lg text-[10px] font-bold uppercase transition-all border cursor-pointer
                                     ${hasSection
                                       ? 'bg-slate-900 text-white border-slate-900 shadow-md'
                                       : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50 hover:border-slate-300'}`}
                                 >
+                                  <input
+                                    type="checkbox"
+                                    checked={hasSection}
+                                    onChange={() => toggleSectionPermission(user, sectionKey)}
+                                    className="hidden"
+                                  />
+                                  {hasSection && <Check className="w-3 h-3 text-emerald-400" />}
                                   {section.title}
-                                </button>
+                                </label>
                               );
                             })}
                           </div>
@@ -225,8 +237,8 @@ const RoleManagement = () => {
           <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-md" onClick={() => setShowAddModal(false)} />
           <div className="bg-white w-full max-w-lg relative rounded-[2.5rem] p-10 space-y-8 animate-in zoom-in duration-300">
             <div>
-              <h2 className="text-2xl font-black text-slate-900 uppercase tracking-tighter">Expand Access</h2>
-              <p className="text-slate-500 text-xs font-bold uppercase tracking-widest">Create a new system operative</p>
+              <h2 className="text-2xl font-semibold text-slate-900 uppercase ">Expand Access</h2>
+              <p className="text-slate-500 text-xs font-bold ">Create a new system operative</p>
             </div>
 
             <form onSubmit={handleAddUser} className="space-y-6">
@@ -261,13 +273,13 @@ const RoleManagement = () => {
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
-                  className="flex-1 px-6 py-4 rounded-2xl text-xs font-black uppercase bg-slate-100 text-slate-500 hover:bg-slate-200 transition-all"
+                  className="flex-1 px-6 py-4 rounded-2xl text-xs font-semibold uppercase bg-slate-100 text-slate-500 hover:bg-slate-200 transition-all"
                 >
                   Abadon
                 </button>
                 <button
                   type="submit"
-                  className="flex-2 px-10 py-4 rounded-2xl text-xs font-black uppercase bg-slate-900 text-white hover:bg-slate-800 transition-all"
+                  className="flex-2 px-10 py-4 rounded-2xl text-xs font-semibold uppercase bg-slate-900 text-white hover:bg-slate-800 transition-all"
                 >
                   Deploy User
                 </button>

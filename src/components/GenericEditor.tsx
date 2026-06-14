@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { siteConfigs, type Section, type Field } from '../config/siteConfigs';
 import { useAuth } from '../context/AuthContext';
+import JoditEditor from 'jodit-react';
 
 interface GenericEditorProps {
   siteKey: string;
@@ -72,11 +73,15 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
   const canDelete = user?.role === 'super_admin' || user?.permissions.canDelete;
   const canCreate = user?.role === 'super_admin' || user?.permissions.canCreate;
 
-  // Build URL without a leading slash so axios appends correctly to the baseURL
-  // e.g. baseURL='https://ishan-backend-g096.onrender.com/api' + 'landing1/' = correct
-  // A leading '/' would bypass baseURL and hit https://ishan-backend-g096.onrender.com/landing1/ (wrong)
   const buildUrl = (ep?: string, suffix = '') => {
-    const base = ep ? `${siteKey}/${ep}` : `${siteKey}/`;
+    let base = `${siteKey}/`;
+    if (ep) {
+      if (ep.startsWith('^')) {
+        base = ep.substring(1);
+      } else {
+        base = `${siteKey}/${ep}`;
+      }
+    }
     return suffix ? `${base}/${suffix}` : base;
   };
 
@@ -125,8 +130,17 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
       if (key === siteKey) return;
       if (user?.role !== 'super_admin' && !user?.permissions.sites.includes(key)) return;
 
-      let targetEndpoint = 'news';
-      if (key === 'iimt') targetEndpoint = 'newsevents';
+      // Search through all pages and their sections to see if this site has a news collection
+      let targetEndpoint = null;
+      for (const page of config.pages) {
+        const newsSection = page.sections?.find((s: any) => s.type === 'collection' && s.endpoint.includes('news'));
+        if (newsSection) {
+          targetEndpoint = newsSection.endpoint;
+          break;
+        }
+      }
+
+      if (!targetEndpoint) return;
 
       broadcastable.push({ siteKey: key, siteName: config.name, endpoint: targetEndpoint });
     });
@@ -195,19 +209,25 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
   };
 
   const renderField = (field: Field, value: any, onChange: (val: any) => void) => {
-    const label = <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1.5">{field.label}</label>;
+    const label = <label className="text-[10px] font-black text-slate-400  block mb-1.5">{field.label}</label>;
 
     switch (field.type) {
       case 'textarea':
         return (
           <div className="space-y-1">
             {label}
-            <textarea
-              readOnly={!canUpdate}
-              className={`w-full bg-white/50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-slate-900/5 focus:border-slate-400 outline-none transition-all min-h-[120px] resize-none ${!canUpdate ? 'opacity-70 cursor-not-allowed' : ''}`}
-              value={value || ""}
-              onChange={(e) => onChange(e.target.value)}
-            />
+            <div className={!canUpdate ? 'opacity-70 pointer-events-none' : ''}>
+              <JoditEditor
+                value={value || ""}
+                config={{
+                  readonly: !canUpdate,
+                  height: 300,
+                  toolbarAdaptive: false,
+                  placeholder: 'Start typing here...'
+                }}
+                onBlur={(newContent) => onChange(newContent)} // Use onBlur for performance
+              />
+            </div>
           </div>
         );
       case 'image':
@@ -312,25 +332,28 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
         );
       case 'object':
         return (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {(field.fields as (string | Field)[]).map((f: string | Field) => {
-              const fConfig = typeof f === 'string' ? { key: f, label: f.replace(/([A-Z])/g, ' $1'), type: 'text' } as Field : f;
-              return (
-                <div key={fConfig.key}>
-                  {renderField(fConfig, value?.[fConfig.key], (v) => onChange({ ...value, [fConfig.key]: v }))}
-                </div>
-              );
-            })}
+          <div className="bg-white/40 border border-slate-200/60 p-6 rounded-[2rem] shadow-sm mb-4">
+            {field.label && <h4 className="text-sm font-semibold text-slate-700 mb-6 border-b border-slate-100 pb-3">{field.label}</h4>}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {(field.fields as (string | Field)[]).map((f: string | Field) => {
+                const fConfig = typeof f === 'string' ? { key: f, label: f.replace(/([A-Z])/g, ' $1'), type: 'text' } as Field : f;
+                return (
+                  <div key={fConfig.key} className="bg-slate-50/50 p-4 rounded-2xl border border-slate-100">
+                    {renderField(fConfig, value?.[fConfig.key], (v) => onChange({ ...value, [fConfig.key]: v }))}
+                  </div>
+                );
+              })}
+            </div>
           </div>
         );
       default:
         return (
           <div className="space-y-1">
             {label}
-            <input
-              type={field.type === 'number' ? 'number' : 'text'}
+            <textarea
               readOnly={!canUpdate}
-              className={`w-full bg-white/50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-slate-900/5 transition-all font-medium ${!canUpdate ? 'opacity-70 cursor-not-allowed' : ''}`}
+              rows={3}
+              className={`w-full bg-white/50 border border-slate-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-slate-900/5 transition-all font-medium resize-y ${!canUpdate ? 'opacity-70 cursor-not-allowed' : ''}`}
               value={value || ""}
               onChange={(e) => onChange(e.target.value)}
             />
@@ -343,7 +366,7 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
     return (
       <div className="flex flex-col items-center justify-center py-40 animate-pulse">
         <Loader2 className="w-10 h-10 text-slate-800 animate-spin mb-4" />
-        <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">Syncing Database...</p>
+        <p className="text-slate-400 font-bold  text-xs">Syncing Database...</p>
       </div>
     );
   }
@@ -371,7 +394,7 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
   return (
     <div className="space-y-8 animate-in fade-in duration-500 pb-20">
       {!canUpdate && (
-        <div className="bg-amber-50 text-amber-700 p-4 rounded-2xl flex items-center gap-3 text-[10px] font-black uppercase tracking-widest border border-amber-100">
+        <div className="bg-amber-50 text-amber-700 p-4 rounded-2xl flex items-center gap-3 text-[10px] font-black  border border-amber-100">
           <Lock className="w-4 h-4" /> Read-Only Mode: Insufficient permissions to modify content.
         </div>
       )}
@@ -380,14 +403,14 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
         <div className={`p-4 rounded-2xl flex items-center gap-3 animate-in fade-in zoom-in duration-300 ${status.type === 'success' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-rose-50 text-rose-700 border border-rose-100'
           }`}>
           {status.type === 'success' ? <CheckCircle2 className="w-5 h-5" /> : <AlertCircle className="w-5 h-5" />}
-          <p className="text-xs font-black uppercase tracking-widest">{status.message}</p>
+          <p className="text-xs font-black ">{status.message}</p>
         </div>
       )}
 
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tight">{section.title}</h1>
-          <p className="text-slate-400 text-xs font-bold uppercase tracking-widest mt-1">Management Mode</p>
+          <p className="text-slate-400 text-xs font-bold  mt-1">Management Mode</p>
         </div>
 
         {section.type === 'singleton' && canUpdate && (
@@ -418,10 +441,10 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
       {section.type === 'collection' && (editingId || editForm) && (
         <div className="bg-white rounded-[2rem] shadow-2xl border border-slate-100 p-8 space-y-8 animate-in slide-in-from-top-4 duration-300">
           <div className="flex items-center justify-between pb-4 border-b border-slate-50">
-            <h3 className="font-black text-slate-900 uppercase tracking-widest">{editingId ? 'Edit Item' : 'Create New Item'}</h3>
+            <h3 className="font-black text-slate-900 ">{editingId ? 'Edit Item' : 'Create New Item'}</h3>
             <button
               onClick={() => { setEditingId(null); setEditForm(null); }}
-              className="text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-slate-900"
+              className="text-[10px] font-black text-slate-400  hover:text-slate-900"
             >
               Cancel
             </button>
@@ -441,7 +464,7 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
           {!editingId && getBroadcastableSites().length > 0 && (
             <div className="pt-6 border-t border-slate-50 space-y-4">
               <div>
-                <h4 className="text-xs font-black uppercase tracking-widest text-slate-800">Broadcast to other portals?</h4>
+                <h4 className="text-xs font-black  text-slate-800">Broadcast to other portals?</h4>
                 <p className="text-[10px] text-slate-400 font-bold mt-1">Select other websites to publish this item simultaneously.</p>
               </div>
               <div className="flex flex-wrap gap-2">
@@ -449,9 +472,9 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
                   <button
                     key={b.siteKey}
                     onClick={() => setBroadcastSites(prev => prev.includes(b.siteKey) ? prev.filter(k => k !== b.siteKey) : [...prev, b.siteKey])}
-                    className={`px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all border flex items-center gap-2 ${broadcastSites.includes(b.siteKey)
-                        ? 'bg-amber-100 border-amber-200 text-amber-700 shadow-sm'
-                        : 'bg-white border-slate-200 text-slate-400 hover:bg-slate-50 hover:text-slate-600 hover:border-slate-300'
+                    className={`px-4 py-2.5 rounded-xl text-xs font-black  transition-all border flex items-center gap-2 ${broadcastSites.includes(b.siteKey)
+                      ? 'bg-amber-100 border-amber-200 text-amber-700 shadow-sm'
+                      : 'bg-white border-slate-200 text-slate-400 hover:bg-slate-50 hover:text-slate-600 hover:border-slate-300'
                       }`}
                   >
                     <div className={`w-2 h-2 rounded-full ${broadcastSites.includes(b.siteKey) ? 'bg-amber-500' : 'bg-slate-200'}`} />
@@ -482,7 +505,7 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
               <div className="flex justify-between items-start mb-4">
                 <div className="space-y-1 pr-4">
                   <h4 className="font-bold text-slate-900 line-clamp-1">{item.programName || item.title || item.name || 'Untitled'}</h4>
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{item.date ? new Date(item.date).toLocaleDateString() : (item.createdAt ? new Date(item.createdAt).toLocaleDateString() : 'Active Content')}</p>
+                  <p className="text-[10px] font-black text-slate-400 ">{item.date ? new Date(item.date).toLocaleDateString() : (item.createdAt ? new Date(item.createdAt).toLocaleDateString() : 'Active Content')}</p>
                 </div>
                 <div className="flex gap-2">
                   <button
@@ -511,7 +534,7 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
           ))}
           {(data as any[]).length === 0 && (
             <div className="col-span-full py-20 text-center border-2 border-dashed border-slate-200 rounded-[2.5rem]">
-              <p className="text-slate-400 font-bold uppercase tracking-widest text-xs italic">No items found in this collection.</p>
+              <p className="text-slate-400 font-bold  text-xs italic">No items found in this collection.</p>
             </div>
           )}
         </div>
@@ -552,7 +575,7 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
                   onClick={() => onNavigate(pageId, prev.id)}
                   className="flex flex-col items-start gap-1 group"
                 >
-                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Previous Section</span>
+                  <span className="text-[10px] font-black text-slate-400 ">Previous Section</span>
                   <div className="flex items-center gap-2 text-slate-600 group-hover:text-slate-900 transition-colors">
                     <div className="p-2 rounded-lg bg-slate-100 group-hover:bg-slate-200">
                       <ChevronRight className="w-4 h-4 rotate-180" />
@@ -567,7 +590,7 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
                   onClick={() => onNavigate(pageId, next.id)}
                   className="flex flex-col items-end gap-1 group text-right"
                 >
-                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Next Section</span>
+                  <span className="text-[10px] font-black text-slate-400 ">Next Section</span>
                   <div className="flex items-center gap-2 text-slate-600 group-hover:text-slate-900 transition-colors">
                     <span className="text-sm font-bold">{next.title}</span>
                     <div className="p-2 rounded-lg bg-slate-100 group-hover:bg-slate-200">
