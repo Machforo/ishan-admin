@@ -41,8 +41,8 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || 'dt7mmeqba';
-    const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || 'ishan_images';
+    const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || 'dsqpiofo3';
+    const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || 'ishan_admin_preset';
 
     setUploadingImage(fieldKey);
     const formData = new FormData();
@@ -63,6 +63,37 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
     } catch (err) {
       console.error('Upload error:', err);
       setStatus({ type: 'error', message: 'Failed to upload image.' });
+    } finally {
+      setUploadingImage(null);
+    }
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, onChange: (val: string) => void, fieldKey: string) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || 'dsqpiofo3';
+    const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || 'ishan_admin_preset';
+
+    setUploadingImage(fieldKey);
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', uploadPreset);
+
+    try {
+      const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`, {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await response.json();
+      if (data.secure_url) {
+        onChange(data.secure_url);
+      } else {
+        setStatus({ type: 'error', message: 'Failed to upload file.' });
+      }
+    } catch (err) {
+      console.error('Upload error:', err);
+      setStatus({ type: 'error', message: 'Failed to upload file.' });
     } finally {
       setUploadingImage(null);
     }
@@ -267,6 +298,49 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
               {value && (
                 <div className="w-24 h-24 shrink-0 rounded-xl overflow-hidden border border-slate-200 shadow-sm bg-slate-50 relative group">
                   <img src={value} alt="Preview" className="w-full h-full object-cover" />
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      case 'file':
+        return (
+          <div className="space-y-1">
+            {label}
+            <div className="flex gap-4 items-start">
+              <div className="flex-1 space-y-3">
+                <input
+                  type="text"
+                  placeholder="File URL..."
+                  readOnly={!canUpdate}
+                  className={`w-full bg-white/50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-slate-900/5 transition-all ${!canUpdate ? 'opacity-70 cursor-not-allowed' : ''}`}
+                  value={value || ""}
+                  onChange={(e) => onChange(e.target.value)}
+                />
+                {canUpdate && (
+                  <div className="relative">
+                    <input
+                      type="file"
+                      onChange={(e) => handleFileUpload(e, onChange, field.key)}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                      disabled={uploadingImage === field.key}
+                    />
+                    <div className="flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-600 px-4 py-2.5 rounded-xl text-sm font-bold transition-all border border-slate-200 border-dashed">
+                      {uploadingImage === field.key ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <UploadCloud className="w-4 h-4" />
+                      )}
+                      {uploadingImage === field.key ? 'Uploading...' : 'Upload File'}
+                    </div>
+                  </div>
+                )}
+              </div>
+              {value && (
+                <div className="shrink-0 flex items-center justify-center rounded-xl p-3 border border-slate-200 shadow-sm bg-slate-50 relative group">
+                  <a href={value} target="_blank" rel="noreferrer" className="text-xs font-bold text-navy hover:text-gold flex items-center gap-1">
+                    <ExternalLink className="w-4 h-4" /> View File
+                  </a>
                 </div>
               )}
             </div>
