@@ -154,6 +154,17 @@ const AppContent = () => {
     }
   };
 
+  const handleSelectPage = (pageId: string) => {
+    setSelectedPage(pageId);
+    const config = siteConfigs[selectedSite];
+    const page = config?.pages.find(p => p.id === pageId);
+    if (page && page.sections.length > 0) {
+      setSelectedSection(page.sections[0].id);
+    } else {
+      setSelectedSection('');
+    }
+  };
+
   const currentSiteConfig = siteConfigs[selectedSite];
   const currentPageConfig = currentSiteConfig?.pages.find(p => p.id === selectedPage);
   const currentSectionConfig = currentPageConfig?.sections.find(s => s.id === selectedSection);
@@ -165,7 +176,7 @@ const AppContent = () => {
         selectedSite={selectedSite}
         onSelectSite={handleSelectSite}
         selectedPage={selectedPage}
-        onSelectPage={setSelectedPage}
+        onSelectPage={handleSelectPage}
         selectedSection={selectedSection}
         onSelectSection={setSelectedSection}
       />

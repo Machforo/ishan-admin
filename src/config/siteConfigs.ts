@@ -224,17 +224,440 @@ export const siteConfigs: Record<string, SiteConfig> = {
         id: "homepage",
         title: "Homepage",
         sections: [
-          { id: "banner", title: "Hospital Banners", endpoint: "homepage", type: "singleton", fields: [{ key: "banners", type: "array", label: "Slides", fields: ["heading", "subheading", { key: "image", type: "image", label: "Image" }, "ctaText"] }] },
-          { id: "stats", title: "Patient Care Stats", endpoint: "homepage", type: "singleton", fields: [{ key: "stats", type: "array", label: "Stats", fields: ["label", "value", "description"] }] },
-          { id: "about", title: "About Hospital", endpoint: "homepage", type: "singleton", fields: [{ key: "aboutHospital", type: "object", label: "Intro", fields: ["title", "content", { key: "image", type: "image", label: "Image" }] }] },
-          { id: "gallery", title: "Hospital Gallery", endpoint: "homepage", type: "singleton", fields: [{ key: "gallery", type: "array", label: "Gallery Images", fields: [{ key: "image", type: "image", label: "Image" }] }] }
+          {
+            id: "banner",
+            title: "Hospital Banners & Settings",
+            endpoint: "homepage",
+            type: "singleton",
+            fields: [
+              { key: "opdHours", type: "text", label: "OPD Hours (e.g. Mon–Sat, 9 AM – 4 PM)" },
+              { key: "experienceText", type: "text", label: "Experience (e.g. 30+ Years of Trust)" },
+              { key: "contactPhone", type: "text", label: "Contact Phone" },
+              { key: "contactEmail", type: "text", label: "Contact Email" },
+              { key: "contactAddress", type: "textarea", label: "Contact Address" },
+              { key: "footerDescription", type: "textarea", label: "Footer Description" },
+              { key: "facebookUrl", type: "text", label: "Facebook Page URL" },
+              { key: "instagramUrl", type: "text", label: "Instagram Page URL" },
+              { key: "youtubeUrl", type: "text", label: "YouTube Channel URL" },
+              {
+                key: "banners",
+                type: "array",
+                label: "Slides",
+                fields: ["heading", "subheading", { key: "image", type: "image", label: "Image" }, "ctaText"]
+              }
+            ]
+          },
+          {
+            id: "stats",
+            title: "Patient Care Stats",
+            endpoint: "homepage",
+            type: "singleton",
+            fields: [
+              {
+                key: "stats",
+                type: "array",
+                label: "Stats",
+                fields: ["label", "value", "description"]
+              }
+            ]
+          },
+          {
+            id: "institutionalProfile",
+            title: "Institutional Profile",
+            endpoint: "homepage",
+            type: "singleton",
+            fields: [
+              {
+                key: "institutionalProfile",
+                type: "object",
+                label: "Institutional Profile",
+                fields: ["heading", "subheading", { key: "description", type: "textarea", label: "Description" }, { key: "image", type: "image", label: "Image" }, "ctaText", "ctaLink"]
+              }
+            ]
+          },
+          {
+            id: "whyChooseUs",
+            title: "Why Choose Us",
+            endpoint: "homepage",
+            type: "singleton",
+            fields: [
+              { key: "whyChooseUsSub", type: "text", label: "Section Tagline (e.g. WHY CHOOSE US)" },
+              { key: "whyChooseUsHeading", type: "text", label: "Section Heading (e.g. Excellence in Ayurvedic Care)" },
+              {
+                key: "whyChooseUs",
+                type: "array",
+                label: "Value Points",
+                fields: ["heading", { key: "description", type: "textarea", label: "Description" }, "icon"]
+              }
+            ]
+          },
+          {
+            id: "panchkarmaHighlight",
+            title: "Panchkarma Highlight",
+            endpoint: "homepage",
+            type: "singleton",
+            fields: [
+              { key: "panchkarmaHeading", type: "text", label: "Section Heading" },
+              { key: "panchkarmaDescription", type: "textarea", label: "Section Description" },
+              { key: "panchkarmaImage", type: "image", label: "Feature Image" },
+              {
+                key: "panchkarmaBenefits",
+                type: "array",
+                label: "Benefits List",
+                fields: ["text"]
+              }
+            ]
+          },
+          {
+            id: "gallery",
+            title: "Hospital Gallery",
+            endpoint: "homepage",
+            type: "singleton",
+            fields: [
+              {
+                key: "gallery",
+                type: "array",
+                label: "Gallery Images",
+                fields: [{ key: "image", type: "image", label: "Image" }]
+              }
+            ]
+          },
+          {
+            id: "accreditations",
+            title: "Accreditations",
+            endpoint: "homepage",
+            type: "singleton",
+            fields: [
+              { key: "accreditationsSubheading", type: "text", label: "Section Subheading (e.g. Trust & Quality)" },
+              { key: "accreditationsHeading", type: "text", label: "Section Heading (e.g. Accreditations & Approvals)" },
+              {
+                key: "accreditations",
+                type: "array",
+                label: "Accreditations",
+                fields: ["text"]
+              }
+            ]
+          }
         ]
       },
-      { id: "testimonials", title: "Patient Reviews", sections: [{ id: "reviews_list", title: "Testimonials", endpoint: "testimonials", type: "collection", fields: ["name", { key: "image", type: "image", label: "Photo" }, "designation", { key: "feedback", type: "textarea", label: "Feedback" }] }] },
-      { id: "departments", title: "Clinical Departments", sections: [{ id: "dept_list", title: "Departments", endpoint: "departments", type: "collection", fields: [{ key: "name", type: "text", label: "Dept Name" }, { key: "description", type: "textarea", label: "Description" }, { key: "image", type: "image", label: "Dept Image" }] }] },
-      { id: "doctors", title: "Medical Staff", sections: [{ id: "doctor_list", title: "Doctors", endpoint: "doctors", type: "collection", fields: [{ key: "name", type: "text", label: "Doctor Name" }, { key: "designation", type: "text", label: "Designation" }, { key: "qualification", type: "text", label: "Qualification" }, { key: "image", type: "image", label: "Photo" }] }] },
-      { id: "services", title: "Patient Services", sections: [{ id: "service_info", title: "Care Services", endpoint: "services", type: "singleton", fields: [{ key: "title", type: "text", label: "Title" }, { key: "description", type: "textarea", label: "Description" }, { key: "image", type: "image", label: "Service Image" }] }] },
-      { id: "submissions", title: "Appointments & Leads", sections: [{ id: "leads", title: "Hospital Enquiries", endpoint: "leads", type: "collection", fields: [] }] }
+      {
+        id: "about_us",
+        title: "About Us",
+        sections: [
+          {
+            id: "content",
+            title: "About Content",
+            endpoint: "aboutus",
+            type: "singleton",
+            fields: [
+              { key: "title", type: "text", label: "Page Title" },
+              { key: "subtitle", type: "textarea", label: "Page Subheading" },
+              {
+                key: "ourStory",
+                type: "object",
+                label: "Our Story",
+                fields: [
+                  { key: "image", type: "image", label: "Cover Image" },
+                  { key: "description", type: "textarea", label: "Description" }
+                ]
+              },
+              {
+                key: "missionVision",
+                type: "object",
+                label: "Mission & Vision",
+                fields: [
+                  { key: "vision", type: "textarea", label: "Vision Statement" },
+                  { key: "mission", type: "textarea", label: "Mission Statement" },
+                  {
+                    key: "values",
+                    type: "array",
+                    label: "Core Values",
+                    fields: ["text"]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: "testimonials",
+        title: "Patient Reviews",
+        sections: [
+          {
+            id: "reviews_list",
+            title: "Testimonials",
+            endpoint: "testimonials",
+            type: "collection",
+            fields: [
+              { key: "name", type: "text", label: "Name" },
+              { key: "image", type: "image", label: "Photo" },
+              { key: "designation", type: "text", label: "Designation/Role" },
+              { key: "feedback", type: "textarea", label: "Feedback/Quote" },
+              { key: "type", type: "text", label: "Type (e.g. Ayurveda)" },
+              { key: "rating", type: "number", label: "Rating (1-5)" }
+            ]
+          }
+        ]
+      },
+      {
+        id: "departments",
+        title: "Clinical Departments",
+        sections: [
+          {
+            id: "header",
+            title: "Page Header",
+            endpoint: "homepage",
+            type: "singleton",
+            fields: [
+              { key: "departmentsHeading", type: "text", label: "Section Heading (e.g. 9 OPD Departments)" },
+              { key: "departmentsSubheading", type: "textarea", label: "Section Subheading" }
+            ]
+          },
+          {
+            id: "dept_list",
+            title: "Departments List",
+            endpoint: "departments",
+            type: "collection",
+            fields: [
+              { key: "name", type: "text", label: "Dept Name" },
+              { key: "subtitle", type: "text", label: "Subtitle" },
+              { key: "slug", type: "text", label: "Slug (e.g. kayachikitsa)" },
+              { key: "path", type: "text", label: "Route Path" },
+              { key: "category", type: "text", label: "Category (e.g. Medicine)" },
+              { key: "color", type: "text", label: "Color Gradient (Tailwind/CSS classes)" },
+              { key: "icon", type: "text", label: "Icon Name (e.g. Leaf, Heart, Scissors, Baby)" },
+              { key: "description", type: "textarea", label: "Description" },
+              { key: "image", type: "image", label: "Dept Image" },
+              { key: "treatments", type: "array", label: "Treatments", fields: ["text"] }
+            ]
+          }
+        ]
+      },
+      {
+        id: "doctors",
+        title: "Medical Staff",
+        sections: [
+          {
+            id: "header",
+            title: "Page Header",
+            endpoint: "homepage",
+            type: "singleton",
+            fields: [
+              { key: "doctorsSubheading", type: "text", label: "Page Subheading (e.g. Expert Care)" },
+              { key: "doctorsHeading", type: "text", label: "Page Heading (e.g. Meet Our Ayurvedic Doctors)" },
+              { key: "doctorsDescription", type: "textarea", label: "Page Description" }
+            ]
+          },
+          {
+            id: "doctor_list",
+            title: "Doctors List",
+            endpoint: "doctors",
+            type: "collection",
+            fields: [
+              { key: "name", type: "text", label: "Doctor Name" },
+              { key: "designation", type: "text", label: "Designation" },
+              { key: "department", type: "text", label: "Department" },
+              { key: "qualification", type: "text", label: "Qualification" },
+              { key: "experience", type: "text", label: "Experience" },
+              { key: "image", type: "image", label: "Photo" },
+              { key: "opdTimings", type: "text", label: "OPD Timings" },
+              { key: "specialization", type: "array", label: "Specializations", fields: ["text"] },
+              { key: "category", type: "text", label: "Category (e.g. Medicine/Therapy/Surgery)" },
+              { key: "days", type: "text", label: "OPD Days" }
+            ]
+          }
+        ]
+      },
+      {
+        id: "services",
+        title: "Patient Services",
+        sections: [
+          {
+            id: "service_info",
+            title: "Care Services",
+            endpoint: "services",
+            type: "singleton",
+            fields: [
+              { key: "title", type: "text", label: "Title" },
+              { key: "description", type: "textarea", label: "Description" },
+              {
+                key: "servicesList",
+                type: "array",
+                label: "Services List",
+                fields: [
+                  { key: "name", type: "text", label: "Service Name" },
+                  { key: "desc", type: "textarea", label: "Description" },
+                  { key: "icon", type: "text", label: "Icon Name (e.g. Calendar, Stethoscope, BookOpen, HelpCircle, FileText, User)" },
+                  { key: "path", type: "text", label: "Route Path" }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: "panchkarma",
+        title: "Panchkarma",
+        sections: [
+          {
+            id: "header",
+            title: "Page Header",
+            endpoint: "homepage",
+            type: "singleton",
+            fields: [
+              { key: "panchkarmaPageTitle", type: "text", label: "Page Heading (e.g. Panchkarma Therapies)" },
+              { key: "panchkarmaPageSub", type: "textarea", label: "Page Subheading" }
+            ]
+          },
+          {
+            id: "about_section",
+            title: "What is Panchkarma?",
+            endpoint: "homepage",
+            type: "singleton",
+            fields: [
+              { key: "whatIsPanchkarmaTitle", type: "text", label: "Section Title" },
+              { key: "whatIsPanchkarmaDesc1", type: "textarea", label: "Description Paragraph 1" },
+              { key: "whatIsPanchkarmaDesc2", type: "textarea", label: "Description Paragraph 2" }
+            ]
+          },
+          {
+            id: "panchkarma_list",
+            title: "Panchkarma Therapies List",
+            endpoint: "panchkarma",
+            type: "collection",
+            fields: [
+              { key: "name", type: "text", label: "Therapy Name" },
+              { key: "slug", type: "text", label: "Slug (e.g. vamana)" },
+              { key: "description", type: "textarea", label: "Description" },
+              { key: "image", type: "image", label: "Cover Image" },
+              { key: "conditions", type: "array", label: "Conditions Treated", fields: ["text"] },
+              { key: "procedure", type: "textarea", label: "Procedure" },
+              { key: "duration", type: "text", label: "Duration" },
+              { key: "eligibility", type: "textarea", label: "Eligibility" }
+            ]
+          }
+        ]
+      },
+      {
+        id: "submissions",
+        title: "Appointments & Leads",
+        sections: [
+          {
+            id: "leads",
+            title: "Hospital Enquiries",
+            endpoint: "leads",
+            type: "collection",
+            fields: []
+          }
+        ]
+      },
+      {
+        id: "header_footer",
+        title: "Header & Footer",
+        sections: [
+          {
+            id: "header_settings",
+            title: "Header Settings",
+            endpoint: "homepage",
+            type: "singleton",
+            fields: [
+              { key: "opdHours", type: "text", label: "OPD Hours" },
+              { key: "contactPhone", type: "text", label: "Contact Phone" },
+              { key: "contactEmail", type: "text", label: "Contact Email" },
+              { key: "contactAddress", type: "textarea", label: "Contact Address" }
+            ]
+          },
+          {
+            id: "navbar_menu",
+            title: "Navbar Menu",
+            endpoint: "homepage",
+            type: "singleton",
+            fields: [
+              {
+                key: "navItems",
+                type: "array",
+                label: "Navbar Links",
+                fields: [
+                  { key: "label", type: "text", label: "Link Label" },
+                  { key: "path", type: "text", label: "Link Path (e.g. /doctors)" },
+                  { key: "disabled", type: "boolean", label: "Disabled?" },
+                  {
+                    key: "children",
+                    type: "array",
+                    label: "Dropdown Submenu Links",
+                    fields: [
+                      { key: "label", type: "text", label: "Sublink Label" },
+                      { key: "path", type: "text", label: "Sublink Path" }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            id: "footer_settings",
+            title: "Footer Settings",
+            endpoint: "homepage",
+            type: "singleton",
+            fields: [
+              { key: "footerDescription", type: "textarea", label: "Footer Description" },
+              { key: "facebookUrl", type: "text", label: "Facebook Page URL" },
+              { key: "instagramUrl", type: "text", label: "Instagram Page URL" },
+              { key: "youtubeUrl", type: "text", label: "YouTube Channel URL" }
+            ]
+          },
+          {
+            id: "footer_menu",
+            title: "Footer Menus",
+            endpoint: "homepage",
+            type: "singleton",
+            fields: [
+              {
+                key: "quickLinks",
+                type: "array",
+                label: "Quick Links Menu",
+                fields: [
+                  { key: "label", type: "text", label: "Label" },
+                  { key: "path", type: "text", label: "Path" },
+                  { key: "disabled", type: "boolean", label: "Disabled?" }
+                ]
+              },
+              {
+                key: "patientLinks",
+                type: "array",
+                label: "Patient Services Menu",
+                fields: [
+                  { key: "label", type: "text", label: "Label" },
+                  { key: "path", type: "text", label: "Path" },
+                  { key: "disabled", type: "boolean", label: "Disabled?" }
+                ]
+              },
+              {
+                key: "legalLinks",
+                type: "array",
+                label: "Legal Links Menu",
+                fields: [
+                  { key: "label", type: "text", label: "Label" },
+                  { key: "path", type: "text", label: "Path" },
+                  { key: "disabled", type: "boolean", label: "Disabled?" }
+                ]
+              }
+            ]
+          },
+          {
+            id: "footer_cta",
+            title: "Footer CTA Banner",
+            endpoint: "homepage",
+            type: "singleton",
+            fields: [
+              { key: "footerCtaHeading", type: "text", label: "Banner Heading" },
+              { key: "footerCtaSubtext", type: "textarea", label: "Banner Subtext" },
+              { key: "footerCtaBtnText", type: "text", label: "Banner Button Text" }
+            ]
+          }
+        ]
+      }
     ]
   },
   legal: {
