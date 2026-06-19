@@ -385,7 +385,7 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
                   )}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                  <div className="grid grid-cols-1 gap-4 mt-2">
                     {Array.isArray(field.fields) && (field.fields as (string | Field)[]).map((f: string | Field) => {
                       const fConfig = typeof f === 'string' ? { key: f, label: f.replace(/([A-Z])/g, ' $1'), type: 'text' } as Field : f;
                       return (
@@ -408,7 +408,7 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
         return (
           <div className="bg-white/40 border border-slate-200/60 p-6 rounded-[2rem] shadow-sm mb-4">
             {field.label && <h4 className="text-sm font-semibold text-slate-700 mb-6 border-b border-slate-100 pb-3">{field.label}</h4>}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 gap-6">
               {(field.fields as (string | Field)[]).map((f: string | Field) => {
                 const fConfig = typeof f === 'string' ? { key: f, label: f.replace(/([A-Z])/g, ' $1'), type: 'text' } as Field : f;
                 return (
