@@ -243,6 +243,19 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
     const label = <label className="text-[10px] font-black text-slate-400  block mb-1.5">{field.label}</label>;
 
     switch (field.type) {
+      case 'text':
+        return (
+          <div className="space-y-1">
+            {label}
+            <input
+              type="text"
+              readOnly={!canUpdate}
+              className={`w-full bg-white/50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-slate-900/5 transition-all ${!canUpdate ? 'opacity-70 cursor-not-allowed' : ''}`}
+              value={value || ""}
+              onChange={(e) => onChange(e.target.value)}
+            />
+          </div>
+        );
       case 'textarea':
         return (
           <div className="space-y-1">
