@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2, Globe, FileText, Loader2, Check, X, ArrowLeft } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Plus, Edit, Trash2, Globe, FileText, Loader2, Check, ArrowLeft } from 'lucide-react';
 
 interface DynamicPage {
   _id?: string;
