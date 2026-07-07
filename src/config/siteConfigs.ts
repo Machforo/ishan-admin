@@ -37,6 +37,7 @@ export const siteConfigs: Record<string, SiteConfig> = {
     name: "Management and Technology",
     baseUrl: "iimt",
     pages: [
+      { id: 'dynamic_pages', title: 'Custom Pages', sections: [] },
       {
         id: "homepage",
         title: "Homepage",
@@ -214,6 +215,7 @@ export const siteConfigs: Record<string, SiteConfig> = {
     name: "Hospital",
     baseUrl: "hospital",
     pages: [
+      { id: 'dynamic_pages', title: 'Custom Pages', sections: [] },
       {
         id: "homepage",
         title: "Homepage",
@@ -658,6 +660,7 @@ export const siteConfigs: Record<string, SiteConfig> = {
     name: "Legal",
     baseUrl: "legal",
     pages: [
+      { id: 'dynamic_pages', title: 'Custom Pages', sections: [] },
       {
         id: 'global_settings',
         title: 'Global Settings',
@@ -821,6 +824,7 @@ export const siteConfigs: Record<string, SiteConfig> = {
     name: "Pharmacy",
     baseUrl: "pharmacy",
     pages: [
+      { id: 'dynamic_pages', title: 'Custom Pages', sections: [] },
       {
         id: 'global_settings',
         title: 'Global Settings',
@@ -941,6 +945,7 @@ export const siteConfigs: Record<string, SiteConfig> = {
     name: "Landing Page 1",
     baseUrl: "landing1",
     pages: [
+      { id: 'dynamic_pages', title: 'Custom Pages', sections: [] },
       {
         id: "homepage",
         title: "Landing Content",
@@ -980,6 +985,7 @@ export const siteConfigs: Record<string, SiteConfig> = {
     name: "Landing Page 2",
     baseUrl: "landing2",
     pages: [
+      { id: 'dynamic_pages', title: 'Custom Pages', sections: [] },
       {
         id: "homepage",
         title: "Landing Content",
@@ -1041,6 +1047,7 @@ export const siteConfigs: Record<string, SiteConfig> = {
     name: "Ayurvedic Medical College",
     baseUrl: "ayurveda",
     pages: [
+      { id: 'dynamic_pages', title: 'Custom Pages', sections: [] },
       {
         id: "homepage",
         title: "Homepage",

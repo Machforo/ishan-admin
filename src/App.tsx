@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { 
-  BarChart3, 
-  Users, 
-  LayoutDashboard, 
+import {
+  BarChart3,
+  Users,
+  LayoutDashboard,
   Search,
   Plus,
   Mail,
@@ -15,6 +15,7 @@ import Sidebar from './components/Sidebar';
 import Login from './components/Login';
 import AllLeads from './components/AllLeads';
 import RoleManagement from './components/RoleManagement';
+import DynamicPagesManager from './components/DynamicPagesManager';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
 // --- Dashboard Component ---
@@ -171,7 +172,7 @@ const AppContent = () => {
 
   return (
     <div className="flex min-h-screen bg-[#f8fafc]">
-      <Sidebar 
+      <Sidebar
         sites={siteConfigs as any}
         selectedSite={selectedSite}
         onSelectSite={handleSelectSite}
@@ -196,37 +197,37 @@ const AppContent = () => {
               )}
             </div>
             <div className="text-lg font-bold text-[#0f172a]">
-              {selectedSite === 'overview' ? 'Dashboard' : 
-               selectedSite === 'all_leads' ? 'Consolidated Enquiries' :
-               selectedSite === 'roles' ? 'Role Management' :
-               (currentSectionConfig?.title || 'Editor')}
+              {selectedSite === 'overview' ? 'Dashboard' :
+                selectedSite === 'all_leads' ? 'Consolidated Enquiries' :
+                  selectedSite === 'roles' ? 'Role Management' :
+                    (currentSectionConfig?.title || 'Editor')}
             </div>
           </div>
 
           <div className="flex items-center gap-6">
             <div className="relative w-72 group hidden xl:block">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-              <input 
-                type="text" 
-                placeholder="Quick search..." 
+              <input
+                type="text"
+                placeholder="Quick search..."
                 className="w-full bg-slate-100/50 border-none rounded-2xl pl-11 pr-4 py-2 text-xs outline-none focus:bg-white focus:ring-2 focus:ring-slate-200 transition-all font-medium"
               />
             </div>
-            
+
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Server Live</span>
             </div>
-            
+
             <div className="flex items-center gap-3 pl-4 border-l border-slate-200">
               <div className="text-right">
                 <div className="text-sm font-bold leading-none">{user.role.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}</div>
                 <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1 group cursor-pointer hover:text-rose-500 transition-colors" onClick={logout}>Sign Out</div>
               </div>
               <div className="w-10 h-10 rounded-2xl bg-slate-800 p-0.5 shadow-md">
-                <img 
-                  src={`https://ui-avatars.com/api/?name=${user.email}&background=0f172a&color=fff`} 
-                  alt="Avatar" 
+                <img
+                  src={`https://ui-avatars.com/api/?name=${user.email}&background=0f172a&color=fff`}
+                  alt="Avatar"
                   className="w-full h-full rounded-[0.85rem]"
                 />
               </div>
@@ -242,9 +243,11 @@ const AppContent = () => {
             <AllLeads />
           ) : selectedSite === 'roles' ? (
             <RoleManagement />
+          ) : selectedPage === 'dynamic_pages' ? (
+            <DynamicPagesManager siteKey={selectedSite} />
           ) : currentSectionConfig ? (
-            <GenericEditor 
-              siteKey={selectedSite} 
+            <GenericEditor
+              siteKey={selectedSite}
               pageId={selectedPage}
               section={currentSectionConfig}
               onNavigate={(pageId, sectionId) => {
