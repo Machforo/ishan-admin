@@ -11,7 +11,10 @@ import {
   ChevronRight,
   Edit2,
   Lock,
-  UploadCloud
+  UploadCloud,
+  Eye,
+  EyeOff,
+  Copy
 } from 'lucide-react';
 import { siteConfigs, type Section, type Field } from '../config/siteConfigs';
 import { useAuth } from '../context/AuthContext';
@@ -22,9 +25,12 @@ interface GenericEditorProps {
   pageId: string;
   section: Section;
   onNavigate: (pageId: string, sectionId: string) => void;
+  onRefreshConfigs?: () => void;
+  onLocalToggleVisibility?: (siteKey: string, pageId: string, sectionId: string, isHidden: boolean) => void;
+  onLocalDuplicate?: (siteKey: string, pageId: string, sectionId: string, newName: string, newUrlSlug: string) => void;
 }
 
-const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section, onNavigate }) => {
+const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section, onNavigate, onRefreshConfigs, onLocalToggleVisibility, onLocalDuplicate }) => {
   const { user } = useAuth();
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
@@ -34,6 +40,11 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<any>(null);
   const [broadcastSites, setBroadcastSites] = useState<string[]>([]);
+
+  const [showDuplicateModal, setShowDuplicateModal] = useState(false);
+  const [duplicateForm, setDuplicateForm] = useState({ newName: '', newUrlSlug: '' });
+  const [duplicating, setDuplicating] = useState(false);
+  const [togglingVisibility, setTogglingVisibility] = useState(false);
 
   const [uploadingImage, setUploadingImage] = useState<string | null>(null);
 
@@ -149,6 +160,78 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
       setStatus({ type: 'error', message: 'Failed to save changes.' });
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleDuplicate = async () => {
+    if (!canCreate) return;
+    if (!duplicateForm.newName || !duplicateForm.newUrlSlug) {
+      setStatus({ type: 'error', message: 'Please provide both name and URL slug.' });
+      return;
+    }
+    setDuplicating(true);
+    setStatus(null);
+    try {
+      await api.post('/cloned-pages', {
+        siteKey,
+        originalPageId: pageId,
+        originalSectionId: section.isCloned ? (section as any).originalSectionId || section.id : section.id,
+        originalEndpoint: section.endpoint,
+        newName: duplicateForm.newName,
+        newUrlSlug: duplicateForm.newUrlSlug,
+        content: data
+      });
+      setStatus({ type: 'success', message: 'Page duplicated successfully!' });
+      setShowDuplicateModal(false);
+      setDuplicateForm({ newName: '', newUrlSlug: '' });
+      if (onRefreshConfigs) onRefreshConfigs();
+      setTimeout(() => setStatus(null), 3000);
+    } catch (err: any) {
+      console.warn("Backend failed, simulating on frontend.");
+      if (onLocalDuplicate) {
+        onLocalDuplicate(siteKey, pageId, section.isCloned ? ((section as any).originalSectionId || section.id) : section.id, duplicateForm.newName, duplicateForm.newUrlSlug);
+        setStatus({ type: 'success', message: 'Page duplicated (Local simulation)' });
+        setShowDuplicateModal(false);
+        setDuplicateForm({ newName: '', newUrlSlug: '' });
+        setTimeout(() => setStatus(null), 3000);
+      } else {
+        setStatus({ type: 'error', message: err.response?.data?.message || 'Failed to duplicate page.' });
+      }
+    } finally {
+      setDuplicating(false);
+    }
+  };
+
+  const handleToggleVisibility = async () => {
+    if (!canUpdate) return;
+    setTogglingVisibility(true);
+    try {
+      if (section.isCloned) {
+        // Toggle visibility for cloned page directly
+        await api.put(`/cloned-pages/${section.id}`, { isHidden: !section.isHidden });
+      } else {
+        // Toggle visibility in PageSettings for static page
+        await api.post('/page-settings/toggle-hide', {
+          siteKey,
+          pageId,
+          sectionId: section.id,
+          isHidden: !section.isHidden
+        });
+      }
+      if (onRefreshConfigs) onRefreshConfigs();
+      setStatus({ type: 'success', message: `Page is now ${!section.isHidden ? 'hidden' : 'visible'}.` });
+      setTimeout(() => setStatus(null), 3000);
+    } catch (err) {
+      console.warn("Backend failed, simulating on frontend.");
+      if (onLocalToggleVisibility) {
+        onLocalToggleVisibility(siteKey, pageId, section.id, !section.isHidden);
+        setStatus({ type: 'success', message: `Page is now ${!section.isHidden ? 'hidden' : 'visible'} (Local simulation).` });
+        setTimeout(() => setStatus(null), 3000);
+      } else {
+        setStatus({ type: 'error', message: 'Failed to toggle visibility.' });
+      }
+    } finally {
+      setTogglingVisibility(false);
     }
   };
 
@@ -496,33 +579,77 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
 
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tight">{section.title}</h1>
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tight">{section.title}</h1>
+            {section.isHidden && (
+              <span className="px-2 py-1 bg-slate-100 text-slate-500 text-[10px] font-black uppercase rounded border border-slate-200">
+                Hidden
+              </span>
+            )}
+            {section.isCloned && (
+              <span className="px-2 py-1 bg-amber-50 text-amber-600 text-[10px] font-black uppercase rounded border border-amber-200">
+                Duplicated
+              </span>
+            )}
+          </div>
           <p className="text-slate-400 text-xs font-bold  mt-1">Management Mode</p>
         </div>
 
-        {section.type === 'singleton' && canUpdate && (
-          <button
-            onClick={handleSaveSingleton}
-            disabled={saving}
-            className="bg-slate-900 text-white px-8 py-2.5 rounded-xl font-bold hover:bg-slate-800 transition-all flex items-center gap-2 disabled:opacity-50"
-          >
-            {saving ? <Loader2 className="w-4 h-4 animate-spin text-white" /> : <Save className="w-4 h-4" />}
-            {saving ? 'Syncing...' : 'Save Changes'}
-          </button>
-        )}
+        <div className="flex items-center gap-3">
+          {canCreate && (
+            <button
+              onClick={() => setShowDuplicateModal(true)}
+              className="bg-white border border-slate-200 text-slate-700 px-4 py-2.5 rounded-xl font-bold hover:bg-slate-50 transition-all flex items-center gap-2 shadow-sm text-sm"
+            >
+              <Copy className="w-4 h-4" /> Duplicate
+            </button>
+          )}
 
-        {section.type === 'collection' && !editingId && !editForm && canCreate && (
-          <button
-            onClick={() => {
-              setEditingId(null);
-              setEditForm({});
-            }}
-            className="bg-amber-400 text-slate-900 px-8 py-2.5 rounded-xl font-bold hover:bg-amber-500 transition-all flex items-center gap-2"
-          >
-            <Plus className="w-4 h-4" />
-            Add New Item
-          </button>
-        )}
+          {canUpdate && (
+            <button
+              onClick={handleToggleVisibility}
+              disabled={togglingVisibility}
+              className={`px-4 py-2.5 rounded-xl font-bold transition-all flex items-center gap-2 text-sm border shadow-sm ${
+                section.isHidden 
+                  ? 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200' 
+                  : 'bg-white text-rose-600 border-rose-100 hover:bg-rose-50'
+              }`}
+            >
+              {togglingVisibility ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : section.isHidden ? (
+                <Eye className="w-4 h-4" />
+              ) : (
+                <EyeOff className="w-4 h-4" />
+              )}
+              {section.isHidden ? 'Unhide' : 'Hide'}
+            </button>
+          )}
+
+          {section.type === 'singleton' && canUpdate && (
+            <button
+              onClick={handleSaveSingleton}
+              disabled={saving}
+              className="bg-slate-900 text-white px-6 py-2.5 rounded-xl font-bold hover:bg-slate-800 transition-all flex items-center gap-2 disabled:opacity-50 text-sm shadow-sm"
+            >
+              {saving ? <Loader2 className="w-4 h-4 animate-spin text-white" /> : <Save className="w-4 h-4" />}
+              {saving ? 'Syncing...' : 'Save'}
+            </button>
+          )}
+
+          {section.type === 'collection' && !editingId && !editForm && canCreate && (
+            <button
+              onClick={() => {
+                setEditingId(null);
+                setEditForm({});
+              }}
+              className="bg-amber-400 text-slate-900 px-6 py-2.5 rounded-xl font-bold hover:bg-amber-500 transition-all flex items-center gap-2 text-sm shadow-sm"
+            >
+              <Plus className="w-4 h-4" />
+              Add Item
+            </button>
+          )}
+        </div>
       </div>
 
       {section.type === 'collection' && (editingId || editForm) && (
@@ -690,6 +817,53 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
           );
         })()}
       </div>
+
+      {showDuplicateModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white rounded-[2rem] shadow-2xl p-8 max-w-md w-full animate-in zoom-in-95 duration-200">
+            <h3 className="text-xl font-black text-slate-900 mb-6">Duplicate Page</h3>
+            <div className="space-y-4 mb-8">
+              <div>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-2">New Page Name</label>
+                <input
+                  type="text"
+                  value={duplicateForm.newName}
+                  onChange={(e) => setDuplicateForm({ ...duplicateForm, newName: e.target.value })}
+                  placeholder="e.g. New Director Message"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-amber-400/20 focus:border-amber-400 transition-all font-medium"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-2">New URL Slug</label>
+                <input
+                  type="text"
+                  value={duplicateForm.newUrlSlug}
+                  onChange={(e) => setDuplicateForm({ ...duplicateForm, newUrlSlug: e.target.value })}
+                  placeholder="e.g. new-director-message"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-amber-400/20 focus:border-amber-400 transition-all font-medium"
+                />
+              </div>
+            </div>
+            <div className="flex items-center justify-end gap-3">
+              <button
+                onClick={() => setShowDuplicateModal(false)}
+                className="px-6 py-2.5 rounded-xl text-sm font-bold text-slate-500 hover:bg-slate-100 transition-colors"
+                disabled={duplicating}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDuplicate}
+                disabled={duplicating || !duplicateForm.newName || !duplicateForm.newUrlSlug}
+                className="bg-amber-400 text-slate-900 px-6 py-2.5 rounded-xl font-bold hover:bg-amber-500 transition-all flex items-center gap-2 disabled:opacity-50 text-sm shadow-sm"
+              >
+                {duplicating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Copy className="w-4 h-4" />}
+                Duplicate
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

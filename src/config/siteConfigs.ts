@@ -17,6 +17,9 @@ export interface Section {
     targetSection: string;
     message: string;
   };
+  isHidden?: boolean;
+  isCloned?: boolean;
+  newUrlSlug?: string;
 }
 
 export interface Page {
