@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   BarChart3,
   Users,
@@ -17,6 +17,7 @@ import AllLeads from './components/AllLeads';
 import RoleManagement from './components/RoleManagement';
 import DynamicPagesManager from './components/DynamicPagesManager';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import api from './api';
 
 // --- Dashboard Component ---
 const Dashboard = () => {
@@ -129,8 +130,80 @@ const AppContent = () => {
   const [selectedSite, setSelectedSite] = useState<string>('overview');
   const [selectedPage, setSelectedPage] = useState<string>('');
   const [selectedSection, setSelectedSection] = useState<string>('');
+  
+  const [dynamicConfigs, setDynamicConfigs] = useState<any>(siteConfigs);
+  const [fetchingConfigs, setFetchingConfigs] = useState(true);
 
-  if (loading) return (
+  const loadDynamicData = async () => {
+    try {
+      setFetchingConfigs(true);
+      const [clonedRes, settingsRes] = await Promise.all([
+        api.get('/cloned-pages'),
+        api.get('/page-settings')
+      ]);
+
+      const clonedPages = clonedRes.data;
+      const pageSettings = settingsRes.data;
+
+      const newConfigs = JSON.parse(JSON.stringify(siteConfigs));
+
+      // Apply hidden settings
+      pageSettings.forEach((setting: any) => {
+        const site = newConfigs[setting.siteKey];
+        if (site) {
+          const page = site.pages.find((p: any) => p.id === setting.pageId);
+          if (page) {
+            const section = page.sections.find((s: any) => s.id === setting.sectionId);
+            if (section) {
+              section.isHidden = setting.isHidden;
+            }
+          }
+        }
+      });
+
+      // Inject cloned pages
+      clonedPages.forEach((cp: any) => {
+        const site = newConfigs[cp.siteKey];
+        if (site) {
+          const page = site.pages.find((p: any) => p.id === cp.originalPageId);
+          // Find original section in base config to copy its fields and type
+          const origSite = siteConfigs[cp.siteKey];
+          const origPage = origSite?.pages.find((p: any) => p.id === cp.originalPageId);
+          const origSection = origPage?.sections.find((s: any) => s.id === cp.originalSectionId);
+          
+          if (page && origSection) {
+            page.sections.push({
+              ...origSection,
+              id: cp._id, // Use DB id as section id
+              title: cp.newName,
+              endpoint: `cloned-pages/${cp._id}`,
+              isCloned: true,
+              isHidden: cp.isHidden,
+              newUrlSlug: cp.newUrlSlug
+            });
+          }
+        }
+      });
+
+      setDynamicConfigs(newConfigs);
+    } catch (err) {
+      console.error('Failed to load dynamic pages:', err);
+    } finally {
+      setFetchingConfigs(false);
+    }
+  };
+
+  // We should fetch dynamic data on load and when it might change
+  // For now, load once when user is available. GenericEditor can trigger a refresh via context or prop if needed.
+  import.meta.hot?.on('vite:beforeUpdate', () => {}); // avoid unused import errors? No.
+  
+  useEffect(() => {
+    if (user) {
+      loadDynamicData();
+    }
+  }, [user]);
+
+  if (loading || (user && fetchingConfigs)) return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center">
       <Loader2 className="w-8 h-8 animate-spin text-slate-400" />
     </div>
@@ -145,7 +218,7 @@ const AppContent = () => {
       setSelectedSection('');
     } else {
       // Auto-select first page and first section
-      const config = siteConfigs[site];
+      const config = dynamicConfigs[site];
       if (config && config.pages.length > 0) {
         setSelectedPage(config.pages[0].id);
         if (config.pages[0].sections.length > 0) {
@@ -157,8 +230,8 @@ const AppContent = () => {
 
   const handleSelectPage = (pageId: string) => {
     setSelectedPage(pageId);
-    const config = siteConfigs[selectedSite];
-    const page = config?.pages.find(p => p.id === pageId);
+    const config = dynamicConfigs[selectedSite];
+    const page = config?.pages.find((p: any) => p.id === pageId);
     if (page && page.sections.length > 0) {
       setSelectedSection(page.sections[0].id);
     } else {
@@ -166,14 +239,55 @@ const AppContent = () => {
     }
   };
 
-  const currentSiteConfig = siteConfigs[selectedSite];
-  const currentPageConfig = currentSiteConfig?.pages.find(p => p.id === selectedPage);
-  const currentSectionConfig = currentPageConfig?.sections.find(s => s.id === selectedSection);
+  const handleLocalToggleVisibility = (siteKey: string, pageId: string, sectionId: string, isHidden: boolean) => {
+    setDynamicConfigs((prev: any) => {
+      const next = JSON.parse(JSON.stringify(prev));
+      const site = next[siteKey];
+      if (site) {
+        const page = site.pages.find((p: any) => p.id === pageId);
+        if (page) {
+          const section = page.sections.find((s: any) => s.id === sectionId);
+          if (section) section.isHidden = isHidden;
+        }
+      }
+      return next;
+    });
+  };
+
+  const handleLocalDuplicate = (siteKey: string, pageId: string, sectionId: string, newName: string, newUrlSlug: string) => {
+    setDynamicConfigs((prev: any) => {
+      const next = JSON.parse(JSON.stringify(prev));
+      const site = next[siteKey];
+      if (site) {
+        const page = site.pages.find((p: any) => p.id === pageId);
+        const origSite = siteConfigs[siteKey];
+        const origPage = origSite?.pages.find((p: any) => p.id === pageId);
+        const origSection = origPage?.sections.find((s: any) => s.id === sectionId);
+        
+        if (page && origSection) {
+          page.sections.push({
+            ...origSection,
+            id: 'mock_cloned_' + Date.now(),
+            title: newName,
+            endpoint: `cloned-pages/mock`,
+            isCloned: true,
+            isHidden: false,
+            newUrlSlug: newUrlSlug
+          });
+        }
+      }
+      return next;
+    });
+  };
+
+  const currentSiteConfig = dynamicConfigs[selectedSite];
+  const currentPageConfig = currentSiteConfig?.pages.find((p: any) => p.id === selectedPage);
+  const currentSectionConfig = currentPageConfig?.sections.find((s: any) => s.id === selectedSection);
 
   return (
     <div className="flex min-h-screen bg-[#f8fafc]">
       <Sidebar
-        sites={siteConfigs as any}
+        sites={dynamicConfigs}
         selectedSite={selectedSite}
         onSelectSite={handleSelectSite}
         selectedPage={selectedPage}
@@ -254,6 +368,9 @@ const AppContent = () => {
                 setSelectedPage(pageId);
                 setSelectedSection(sectionId);
               }}
+              onRefreshConfigs={loadDynamicData}
+              onLocalToggleVisibility={handleLocalToggleVisibility}
+              onLocalDuplicate={handleLocalDuplicate}
             />
           ) : (
             <div className="h-[60vh] flex items-center justify-center text-slate-400 italic">
