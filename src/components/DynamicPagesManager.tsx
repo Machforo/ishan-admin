@@ -11,7 +11,7 @@ interface DynamicPage {
   published: boolean;
 }
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://ishan-backend-g096.onrender.com/api';
 
 const TEMPLATES = [
   { id: 'standard', name: 'Standard Text Page' },

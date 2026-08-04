@@ -142,8 +142,16 @@ const AppContent = () => {
         api.get('/page-settings')
       ]);
 
-      const clonedPages = clonedRes.data;
-      const pageSettings = settingsRes.data;
+      const clonedPagesData = clonedRes?.data;
+      const pageSettingsData = settingsRes?.data;
+
+      const clonedPages = Array.isArray(clonedPagesData)
+        ? clonedPagesData
+        : (Array.isArray(clonedPagesData?.data) ? clonedPagesData.data : []);
+
+      const pageSettings = Array.isArray(pageSettingsData)
+        ? pageSettingsData
+        : (Array.isArray(pageSettingsData?.data) ? pageSettingsData.data : []);
 
       const newConfigs = JSON.parse(JSON.stringify(siteConfigs));
 
