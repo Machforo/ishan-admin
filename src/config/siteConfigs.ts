@@ -442,6 +442,21 @@ export const siteConfigs: Record<string, SiteConfig> = {
               { key: "feedback", type: "object", label: "Feedback Form Config", fields: [{ key: "pageTitle", type: "text", label: "Page Title" }, { key: "pageSubtitle", type: "textarea", label: "Page Subtitle" }, { key: "description", type: "textarea", label: "Description" }, { key: "bannerImage", type: "image", label: "Banner Image" }, { key: "images", type: "array", label: "Images", fields: [{ key: "url", type: "image", label: "Image" }] }] }]
           },
           {
+            id: "admission_enquiry", title: "Admission Enquiry", endpoint: "leads", type: "collection", fields: [
+              { key: "name", type: "text", label: "Full Name" },
+              { key: "email", type: "text", label: "Email Address" },
+              { key: "phone", type: "text", label: "Phone Number" },
+              { key: "course", type: "text", label: "Course / Interest" },
+              { key: "message", type: "textarea", label: "Message" },
+              { key: "source", type: "text", label: "Source" },
+              { key: "status", type: "select", label: "Status", options: [
+                { label: "New", value: "New" },
+                { label: "Contacted", value: "Contacted" },
+                { label: "Closed", value: "Closed" }
+              ]}
+            ]
+          },
+          {
             id: "careers", title: "Careers", endpoint: "contact", type: "singleton", fields: [
               { key: "careers", type: "object", label: "Careers Config", fields: [{ key: "pageTitle", type: "text", label: "Page Title" }, { key: "pageSubtitle", type: "textarea", label: "Page Subtitle" }, { key: "description", type: "textarea", label: "Description" }, { key: "email", type: "text", label: "HR Email" }, { key: "bannerImage", type: "image", label: "Banner Image" }, { key: "images", type: "array", label: "Images", fields: [{ key: "url", type: "image", label: "Image" }] }, { key: "jobs", type: "array", label: "Open Positions", fields: ["title", "qualification", "dept", "type"] }] }]
           }
@@ -468,9 +483,33 @@ export const siteConfigs: Record<string, SiteConfig> = {
       {
         id: "applicant_submissions", title: "Applicant Submissions", sections: [{
           id: "leads", title: "Leads", endpoint: "leads", type: "collection", fields: [
+            { key: "name", type: "text", label: "Full Name" },
+            { key: "email", type: "text", label: "Email Address" },
+            { key: "phone", type: "text", label: "Phone Number" },
+            { key: "course", type: "text", label: "Course / Interest" },
+            { key: "message", type: "textarea", label: "Message" },
+            { key: "source", type: "text", label: "Source" },
+            { key: "status", type: "select", label: "Status", options: [
+              { label: "New", value: "New" },
+              { label: "Contacted", value: "Contacted" },
+              { label: "Closed", value: "Closed" }
+            ]}
           ]
         }, {
           id: "job_apps", title: "Job Applications", endpoint: "job-applications", type: "collection", fields: [
+            { key: "name", type: "text", label: "Full Name" },
+            { key: "email", type: "text", label: "Email Address" },
+            { key: "phone", type: "text", label: "Phone Number" },
+            { key: "jobTitle", type: "text", label: "Job Title" },
+            { key: "department", type: "text", label: "Department" },
+            { key: "resumeLink", type: "text", label: "Resume / Drive Link" },
+            { key: "coverLetter", type: "textarea", label: "Cover Letter" },
+            { key: "status", type: "select", label: "Status", options: [
+              { label: "New", value: "New" },
+              { label: "Reviewed", value: "Reviewed" },
+              { label: "Rejected", value: "Rejected" },
+              { label: "Hired", value: "Hired" }
+            ]}
           ]
         }]
       }
