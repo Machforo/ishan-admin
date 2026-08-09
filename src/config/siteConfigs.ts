@@ -449,11 +449,13 @@ export const siteConfigs: Record<string, SiteConfig> = {
               { key: "course", type: "text", label: "Course / Interest" },
               { key: "message", type: "textarea", label: "Message" },
               { key: "source", type: "text", label: "Source" },
-              { key: "status", type: "select", label: "Status", options: [
-                { label: "New", value: "New" },
-                { label: "Contacted", value: "Contacted" },
-                { label: "Closed", value: "Closed" }
-              ]}
+              {
+                key: "status", type: "select", label: "Status", options: [
+                  { label: "New", value: "New" },
+                  { label: "Contacted", value: "Contacted" },
+                  { label: "Closed", value: "Closed" }
+                ]
+              }
             ]
           },
           {
@@ -489,11 +491,13 @@ export const siteConfigs: Record<string, SiteConfig> = {
             { key: "course", type: "text", label: "Course / Interest" },
             { key: "message", type: "textarea", label: "Message" },
             { key: "source", type: "text", label: "Source" },
-            { key: "status", type: "select", label: "Status", options: [
-              { label: "New", value: "New" },
-              { label: "Contacted", value: "Contacted" },
-              { label: "Closed", value: "Closed" }
-            ]}
+            {
+              key: "status", type: "select", label: "Status", options: [
+                { label: "New", value: "New" },
+                { label: "Contacted", value: "Contacted" },
+                { label: "Closed", value: "Closed" }
+              ]
+            }
           ]
         }, {
           id: "job_apps", title: "Job Applications", endpoint: "job-applications", type: "collection", fields: [
@@ -504,12 +508,14 @@ export const siteConfigs: Record<string, SiteConfig> = {
             { key: "department", type: "text", label: "Department" },
             { key: "resumeLink", type: "text", label: "Resume / Drive Link" },
             { key: "coverLetter", type: "textarea", label: "Cover Letter" },
-            { key: "status", type: "select", label: "Status", options: [
-              { label: "New", value: "New" },
-              { label: "Reviewed", value: "Reviewed" },
-              { label: "Rejected", value: "Rejected" },
-              { label: "Hired", value: "Hired" }
-            ]}
+            {
+              key: "status", type: "select", label: "Status", options: [
+                { label: "New", value: "New" },
+                { label: "Reviewed", value: "Reviewed" },
+                { label: "Rejected", value: "Rejected" },
+                { label: "Hired", value: "Hired" }
+              ]
+            }
           ]
         }]
       }
@@ -1672,11 +1678,15 @@ export const siteConfigs: Record<string, SiteConfig> = {
           },
           {
             id: "aboutContent", title: "About Content", endpoint: "", type: "singleton", fields: [
-              { key: "aboutContent", type: "object", label: "About Content", fields: ["title", "description"] }]
+              { key: "aboutContent", type: "object", label: "About Content", fields: ["title", "description", "ctaText", "ctaLink"] }]
           },
           {
             id: "aboutImages", title: "About Images", endpoint: "", type: "singleton", fields: [
               { key: "aboutImages", type: "array", label: "Images", fields: [{ key: "url", type: "image", label: "Image" }] }]
+          },
+          {
+            id: "programCategories", title: "Programme Tab Labels", endpoint: "", type: "singleton", fields: [
+              { key: "programCategories", type: "array", label: "Programme Tabs (id must match: ug / pg / diploma / doctoral)", fields: ["id", "label"] }]
           },
           {
             id: "programs", title: "Programs", endpoint: "", type: "singleton", fields: [
@@ -1684,7 +1694,7 @@ export const siteConfigs: Record<string, SiteConfig> = {
           },
           {
             id: "programmeSection", title: "Programme Headers", endpoint: "^programme-head", type: "singleton", fields: [
-              { key: "heading", type: "text", label: "Heading" }, { key: "subheading", type: "longtext", label: "Subheading" }, { key: "searchPlaceholder", type: "text", label: "Search Bar Placeholder" }, { key: "ctaApply", type: "text", label: "Apply Now Button Text" }, { key: "ctaViewAll", type: "text", label: "View All Button Text" }]
+              { key: "heading", type: "text", label: "Heading" }, { key: "subheading", type: "longtext", label: "Subheading" }, { key: "searchPlaceholder", type: "text", label: "Search Bar Placeholder" }, { key: "ctaApply", type: "text", label: "Apply Now Button Text" }, { key: "ctaApplyLink", type: "text", label: "Apply Now Button Link" }, { key: "ctaViewAll", type: "text", label: "View All Button Text" }, { key: "ctaViewAllLink", type: "text", label: "View All Button Link" }]
           },
           {
             id: "collegeSection", title: "College Headers", endpoint: "^college-head", type: "singleton", fields: [
@@ -1700,11 +1710,11 @@ export const siteConfigs: Record<string, SiteConfig> = {
           },
           {
             id: "campusLinks", title: "Campus Links", endpoint: "", type: "singleton", fields: [
-              { key: "campusLinks", type: "array", label: "Campus Links", fields: ["text"] }]
+              { key: "campusLinks", type: "array", label: "Campus Links", fields: ["text", "url"] }]
           },
           {
             id: "facilityLinks", title: "Facility Links", endpoint: "", type: "singleton", fields: [
-              { key: "facilityLinks", type: "array", label: "Facility Links", fields: ["text"] }]
+              { key: "facilityLinks", type: "array", label: "Facility Links", fields: ["text", { key: "url", type: "text", label: "Link URL — internal (e.g. /campus) or external (e.g. https://ishan.ac/facilities)" }] }]
           },
           {
             id: "researchSection", title: "Research Headers", endpoint: "", type: "singleton", fields: [
@@ -1712,11 +1722,11 @@ export const siteConfigs: Record<string, SiteConfig> = {
           },
           {
             id: "researchCards", title: "Research Cards", endpoint: "", type: "singleton", fields: [
-              { key: "researchCards", type: "array", label: "Research Cards", fields: ["tag", "title", { key: "image", type: "image", label: "Image" }] }]
+              { key: "researchCards", type: "array", label: "Research Cards", fields: ["tag", "title", { key: "image", type: "image", label: "Image" }, "link"] }]
           },
           {
             id: "researchLinks", title: "Research Links", endpoint: "", type: "singleton", fields: [
-              { key: "researchLinks", type: "array", label: "Research Links", fields: ["text"] }]
+              { key: "researchLinks", type: "array", label: "Research Links", fields: ["text", { key: "url", type: "text", label: "Link URL — internal (e.g. /research) or external (e.g. https://ishan.ac/journal)" }] }]
           },
           {
             id: "placementSection", title: "Placement Section Content", endpoint: "^placement-head", type: "singleton", fields: [
@@ -1761,6 +1771,23 @@ export const siteConfigs: Record<string, SiteConfig> = {
           {
             id: "footer", title: "Footer Links", endpoint: "", type: "singleton", fields: [
               { key: "footerLabels", type: "object", label: "Footer Labels", fields: ["about", "admissions", "quickLinks", "approvals", "group", "copyright", "privacy", "terms", "sitemap"] }, { key: "footerLinks", type: "object", label: "Footer Links", fields: [{ key: "quickLinks", type: "array", label: "Quick Links", fields: ["text", "url"] }, { key: "rankings", type: "array", label: "Rankings", fields: ["text", "url"] }, { key: "group", type: "array", label: "Group", fields: ["text", "url"] }] }]
+          },
+          {
+            id: "leads", title: "Admission Leads", endpoint: "leads", type: "collection", fields: [
+              { key: "name", type: "text", label: "Full Name" },
+              { key: "email", type: "text", label: "Email Address" },
+              { key: "phone", type: "text", label: "Phone Number" },
+              { key: "course", type: "text", label: "Course / Interest" },
+              { key: "message", type: "textarea", label: "Message" },
+              { key: "source", type: "text", label: "Source" },
+              {
+                key: "status", type: "select", label: "Status", options: [
+                  { label: "New", value: "New" },
+                  { label: "Contacted", value: "Contacted" },
+                  { label: "Closed", value: "Closed" }
+                ]
+              }
+            ]
           }
         ]
       }
@@ -1834,11 +1861,15 @@ export const siteConfigs: Record<string, SiteConfig> = {
           },
           {
             id: "aboutContent", title: "About Content", endpoint: "", type: "singleton", fields: [
-              { key: "aboutContent", type: "object", label: "About Content", fields: ["title", "description"] }]
+              { key: "aboutContent", type: "object", label: "About Content", fields: ["title", "description", "ctaText", "ctaLink"] }]
           },
           {
             id: "aboutImages", title: "About Images", endpoint: "", type: "singleton", fields: [
               { key: "aboutImages", type: "array", label: "Images", fields: [{ key: "url", type: "image", label: "Image" }] }]
+          },
+          {
+            id: "programCategories", title: "Programme Tab Labels", endpoint: "", type: "singleton", fields: [
+              { key: "programCategories", type: "array", label: "Programme Tabs (id must match: ug / pg / diploma / doctoral)", fields: ["id", "label"] }]
           },
           {
             id: "programs", title: "Programs", endpoint: "", type: "singleton", fields: [
@@ -1846,7 +1877,7 @@ export const siteConfigs: Record<string, SiteConfig> = {
           },
           {
             id: "programmeSection", title: "Programme Headers", endpoint: "", type: "singleton", fields: [
-              { key: "programmeSection", type: "object", label: "Programme Headers", fields: ["heading", "subheading"] }]
+              { key: "programmeSection", type: "object", label: "Programme Headers", fields: ["heading", "subheading", "ctaApply", "ctaApplyLink", "ctaViewAll", "ctaViewAllLink"] }]
           },
           {
             id: "collegeSection", title: "College Headers", endpoint: "", type: "singleton", fields: [
@@ -1862,11 +1893,11 @@ export const siteConfigs: Record<string, SiteConfig> = {
           },
           {
             id: "campusLinks", title: "Campus Links", endpoint: "", type: "singleton", fields: [
-              { key: "campusLinks", type: "array", label: "Campus Links", fields: ["text"] }]
+              { key: "campusLinks", type: "array", label: "Campus Links", fields: ["text", "url"] }]
           },
           {
             id: "facilityLinks", title: "Facility Links", endpoint: "", type: "singleton", fields: [
-              { key: "facilityLinks", type: "array", label: "Facility Links", fields: ["text"] }]
+              { key: "facilityLinks", type: "array", label: "Facility Links", fields: ["text", { key: "url", type: "text", label: "Link URL — internal (e.g. /campus) or external (e.g. https://ishan.ac/facilities)" }] }]
           },
           {
             id: "researchSection", title: "Research Headers", endpoint: "", type: "singleton", fields: [
@@ -1874,11 +1905,11 @@ export const siteConfigs: Record<string, SiteConfig> = {
           },
           {
             id: "researchCards", title: "Research Cards", endpoint: "", type: "singleton", fields: [
-              { key: "researchCards", type: "array", label: "Research Cards", fields: ["tag", "title", { key: "image", type: "image", label: "Image" }] }]
+              { key: "researchCards", type: "array", label: "Research Cards", fields: ["tag", "title", { key: "image", type: "image", label: "Image" }, "link"] }]
           },
           {
             id: "researchLinks", title: "Research Links", endpoint: "", type: "singleton", fields: [
-              { key: "researchLinks", type: "array", label: "Research Links", fields: ["text"] }]
+              { key: "researchLinks", type: "array", label: "Research Links", fields: ["text", { key: "url", type: "text", label: "Link URL — internal (e.g. /research) or external (e.g. https://ishan.ac/journal)" }] }]
           },
           {
             id: "placementSection", title: "Placement Section Content", endpoint: "^placement-head-v2", type: "singleton", fields: [
@@ -1890,7 +1921,7 @@ export const siteConfigs: Record<string, SiteConfig> = {
           },
           {
             id: "recruiters", title: "Recruiters", endpoint: "", type: "singleton", fields: [
-              { key: "recruiters", type: "array", label: "Recruiters", fields: ["name"] }]
+              { key: "recruiters", type: "array", label: "Recruiters", fields: ["name", { key: "icon", type: "image", label: "Icon" }] }]
           },
           {
             id: "testimonials", title: "Testimonials", endpoint: "", type: "singleton", fields: [
@@ -1923,6 +1954,23 @@ export const siteConfigs: Record<string, SiteConfig> = {
           {
             id: "footer", title: "Footer Links", endpoint: "", type: "singleton", fields: [
               { key: "footerLabels", type: "object", label: "Footer Labels", fields: ["about", "admissions", "quickLinks", "approvals", "group", "copyright", "privacy", "terms", "sitemap"] }, { key: "footerLinks", type: "object", label: "Footer Links", fields: [{ key: "quickLinks", type: "array", label: "Quick Links", fields: ["text", "url"] }, { key: "rankings", type: "array", label: "Rankings", fields: ["text", "url"] }, { key: "group", type: "array", label: "Group", fields: ["text", "url"] }] }]
+          },
+          {
+            id: "leads", title: "Admission Leads", endpoint: "leads", type: "collection", fields: [
+              { key: "name", type: "text", label: "Full Name" },
+              { key: "email", type: "text", label: "Email Address" },
+              { key: "phone", type: "text", label: "Phone Number" },
+              { key: "course", type: "text", label: "Course / Interest" },
+              { key: "message", type: "textarea", label: "Message" },
+              { key: "source", type: "text", label: "Source" },
+              {
+                key: "status", type: "select", label: "Status", options: [
+                  { label: "New", value: "New" },
+                  { label: "Contacted", value: "Contacted" },
+                  { label: "Closed", value: "Closed" }
+                ]
+              }
+            ]
           }
         ]
       }
