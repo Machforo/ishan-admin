@@ -138,8 +138,8 @@ const AppContent = () => {
     try {
       setFetchingConfigs(true);
       const [clonedRes, settingsRes] = await Promise.all([
-        api.get('/cloned-pages'),
-        api.get('/page-settings')
+        api.get('/cloned-pages').catch(() => ({ data: [] })),
+        api.get('/page-settings').catch(() => ({ data: [] }))
       ]);
 
       const clonedPagesData = clonedRes?.data;

@@ -19,6 +19,39 @@ import {
 import { siteConfigs, type Section, type Field } from '../config/siteConfigs';
 import { useAuth } from '../context/AuthContext';
 import JoditEditor from 'jodit-react';
+import { SECTION_TEMPLATES } from '../utils/sectionTemplates';
+
+const RichTextEditorField = ({ value, canUpdate, onChange }: { value: any, canUpdate?: boolean, onChange: (val: any) => void }) => {
+  const config = React.useMemo(() => ({
+    readonly: !canUpdate,
+    height: 300,
+    toolbarAdaptive: false,
+    askBeforePasteHTML: false,
+    defaultActionOnPaste: "insert_clear_html" as any,
+    placeholder: 'Start typing here...',
+    enter: "BR" as any
+  }), [canUpdate]);
+
+  const handleBlur = (newContent: string) => {
+    let cleaned = newContent.trim();
+    // Strip outer <p> tags to prevent unwanted vertical margins on the frontend
+    if (cleaned.startsWith('<p>') && cleaned.endsWith('</p>')) {
+      const inner = cleaned.slice(3, -4).trim();
+      if (!inner.includes('<p>')) {
+        cleaned = inner;
+      }
+    }
+    onChange(cleaned);
+  };
+
+  return (
+    <JoditEditor
+      value={value || ""}
+      config={config}
+      onBlur={handleBlur}
+    />
+  );
+};
 
 interface GenericEditorProps {
   siteKey: string;
@@ -340,19 +373,15 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
           </div>
         );
       case 'textarea':
+      case 'richtext':
         return (
           <div className="space-y-1">
             {label}
             <div className={!canUpdate ? 'opacity-70 pointer-events-none' : ''}>
-              <JoditEditor
-                value={value || ""}
-                config={{
-                  readonly: !canUpdate,
-                  height: 300,
-                  toolbarAdaptive: false,
-                  placeholder: 'Start typing here...'
-                }}
-                onBlur={(newContent) => onChange(newContent)} // Use onBlur for performance
+              <RichTextEditorField
+                value={value}
+                canUpdate={canUpdate}
+                onChange={onChange}
               />
             </div>
           </div>
@@ -455,15 +484,17 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
             />
           </div>
         );
+      case 'string_array':
       case 'array':
         const items = value || [];
+        const isStringArray = field.type === 'string_array';
         return (
           <div className="space-y-4 pt-4">
             <div className="flex items-center justify-between">
               {label}
               {canUpdate && (
                 <button
-                  onClick={() => onChange([...items, {}])}
+                  onClick={() => onChange([...items, isStringArray ? "" : {}])}
                   className="text-[10px] font-black uppercase text-slate-500 hover:text-slate-900 flex items-center gap-1.5"
                 >
                   <Plus className="w-3 h-3" /> Add Entry
@@ -474,26 +505,65 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
               {items.map((item: any, idx: number) => (
                 <div key={idx} className="p-4 bg-slate-50/50 rounded-2xl border border-slate-100 relative group">
                   {canDelete && (
-                    <button
-                      onClick={() => onChange(items.filter((_: any, i: number) => i !== idx))}
-                      className="absolute top-4 right-4 text-slate-300 hover:text-rose-500"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
+                    <div className="absolute top-4 right-4 flex items-center gap-2">
+                      <button
+                        onClick={() => {
+                          if (idx === 0) return;
+                          const newArr = [...items];
+                          [newArr[idx - 1], newArr[idx]] = [newArr[idx], newArr[idx - 1]];
+                          onChange(newArr);
+                        }}
+                        disabled={idx === 0}
+                        className="text-slate-300 hover:text-slate-500 disabled:opacity-30 disabled:cursor-not-allowed"
+                        title="Move Up"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+                      </button>
+                      <button
+                        onClick={() => {
+                          if (idx === items.length - 1) return;
+                          const newArr = [...items];
+                          [newArr[idx + 1], newArr[idx]] = [newArr[idx], newArr[idx + 1]];
+                          onChange(newArr);
+                        }}
+                        disabled={idx === items.length - 1}
+                        className="text-slate-300 hover:text-slate-500 disabled:opacity-30 disabled:cursor-not-allowed"
+                        title="Move Down"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                      </button>
+                      <button
+                        onClick={() => onChange(items.filter((_: any, i: number) => i !== idx))}
+                        className="text-slate-300 hover:text-rose-500"
+                        title="Delete"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
                   )}
                   <div className="grid grid-cols-1 gap-4 mt-2">
-                    {Array.isArray(field.fields) && (field.fields as (string | Field)[]).map((f: string | Field) => {
-                      const fConfig = typeof f === 'string' ? { key: f, label: f.replace(/([A-Z])/g, ' $1'), type: 'text' } as Field : f;
-                      return (
-                        <div key={fConfig.key}>
-                          {renderField(fConfig, item[fConfig.key], (v) => {
-                            const newArr = [...items];
-                            newArr[idx] = { ...newArr[idx], [fConfig.key]: v };
-                            onChange(newArr);
-                          })}
-                        </div>
-                      );
-                    })}
+                    {isStringArray ? (
+                      <div key="primitive">
+                        {renderField({ key: 'value', type: 'text', label: 'Value' }, item, (v) => {
+                          const newArr = [...items];
+                          newArr[idx] = v;
+                          onChange(newArr);
+                        })}
+                      </div>
+                    ) : (
+                      Array.isArray(field.fields) && (field.fields as (string | Field)[]).map((f: string | Field) => {
+                        const fConfig = typeof f === 'string' ? { key: f, label: f.replace(/([A-Z])/g, ' $1'), type: 'text' } as Field : f;
+                        return (
+                          <div key={fConfig.key}>
+                            {renderField(fConfig, item[fConfig.key], (v) => {
+                              const newArr = [...items];
+                              newArr[idx] = { ...newArr[idx], [fConfig.key]: v };
+                              onChange(newArr);
+                            })}
+                          </div>
+                        );
+                      })
+                    )}
                   </div>
                 </div>
               ))}
@@ -534,13 +604,32 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
           </div>
         );
       default:
+        const isHtmlContent = field.key === 'htmlContent' || field.type === 'longtext';
         return (
           <div className="space-y-1">
-            {label}
+            <div className="flex items-center justify-between">
+              {label}
+              {isHtmlContent && canUpdate && (
+                <select
+                  className="text-xs bg-slate-100 border border-slate-200 text-slate-700 px-2 py-1 rounded"
+                  onChange={(e) => {
+                    const tmpl = SECTION_TEMPLATES.find(t => t.name === e.target.value);
+                    if (tmpl) onChange(tmpl.html);
+                    e.target.value = "";
+                  }}
+                  defaultValue=""
+                >
+                  <option value="" disabled>Load Readymade Template</option>
+                  {SECTION_TEMPLATES.map(t => (
+                    <option key={t.name} value={t.name}>{t.name}</option>
+                  ))}
+                </select>
+              )}
+            </div>
             <textarea
               readOnly={!canUpdate}
-              rows={3}
-              className={`w-full bg-white/50 border border-slate-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-slate-900/5 transition-all font-medium resize-y ${!canUpdate ? 'opacity-70 cursor-not-allowed' : ''}`}
+              rows={isHtmlContent ? 10 : 3}
+              className={`w-full bg-white/50 border border-slate-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-slate-900/5 transition-all font-medium resize-y font-mono ${!canUpdate ? 'opacity-70 cursor-not-allowed' : ''}`}
               value={value || ""}
               onChange={(e) => onChange(e.target.value)}
             />
@@ -735,7 +824,7 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
             <div key={item._id} className="bg-white/70 backdrop-blur-md border border-white/20 p-6 rounded-[2rem] shadow-xl hover:-translate-y-1 transition-all group overflow-hidden">
               <div className="flex justify-between items-start mb-4">
                 <div className="space-y-1 pr-4">
-                  <h4 className="font-bold text-slate-900 line-clamp-1">{item.programName || item.title || item.name || 'Untitled'}</h4>
+                  <h4 className="font-bold text-slate-900 line-clamp-1">{item.programName || item.title || item.name || item.urlPath || item.url || 'Untitled'}</h4>
                   <p className="text-[10px] font-black text-slate-400 ">{item.date ? new Date(item.date).toLocaleDateString() : (item.createdAt ? new Date(item.createdAt).toLocaleDateString() : 'Active Content')}</p>
                 </div>
                 <div className="flex gap-2">
