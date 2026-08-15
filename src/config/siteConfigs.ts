@@ -1673,7 +1673,11 @@ export const siteConfigs: Record<string, SiteConfig> = {
           },
           {
             id: 'certificates', title: 'Certificate Programs', endpoint: 'certificates', type: 'collection', fields: [
-              { key: 'name', type: 'text', label: 'Program Name' }, { key: 'duration', type: 'text', label: 'Duration' }, { key: 'fee', type: 'text', label: 'Fee' }, { key: 'eligibility', type: 'text', label: 'Eligibility' }, { key: 'desc', type: 'textarea', label: 'Description' }]
+              { key: 'name', type: 'text', label: 'Program Name' }, { key: 'duration', type: 'text', label: 'Duration' }, { key: 'fee', type: 'text', label: 'Fee' }, { key: 'eligibility', type: 'text', label: 'Eligibility' }, { key: 'desc', type: 'textarea', label: 'Description' }, { key: 'image', type: 'image', label: 'Cover Image' }, { key: 'bannerImage', type: 'image', label: 'Banner Image' }, { key: 'images', type: 'array', label: 'Gallery Images', fields: [{ key: 'url', type: 'image', label: 'Image URL' }] }]
+          },
+          {
+            id: 'certificate_programs_page', title: 'Certificates Page Config', endpoint: 'admissions', type: 'singleton', fields: [
+              { key: 'certificateProgramsPage', type: 'object', label: 'Page Configuration', fields: ['title', 'subtitle', { key: 'description', type: 'textarea', label: 'Description' }, { key: 'image', type: 'image', label: 'Banner Image' }] }]
           },
           {
             id: 'admissions', title: 'Admissions & Scholarships', endpoint: 'admissions', type: 'singleton', fields: [
@@ -1780,6 +1784,10 @@ export const siteConfigs: Record<string, SiteConfig> = {
           {
             id: 'contact', title: 'Contact Us', endpoint: 'contact', type: 'singleton', fields: [
               { key: 'address', type: 'text', label: 'Address' }, { key: 'phones', type: 'array', label: 'Phone Numbers', fields: ['number', 'department'] }, { key: 'emails', type: 'array', label: 'Emails', fields: ['address', 'department'] }, { key: 'workingHours', type: 'text', label: 'Working Hours' }, { key: 'mapUrl', type: 'text', label: 'Map iframe URL' }, { key: 'bannerImage', type: 'image', label: 'Banner Image' }, { key: 'images', type: 'array', label: 'Gallery Images', fields: [{ key: 'url', type: 'image', label: 'Image URL' }] }]
+          },
+          {
+            id: 'feedback_page', title: 'Feedback Page Config', endpoint: 'contact', type: 'singleton', fields: [
+              { key: 'feedbackPage', type: 'object', label: 'Feedback Page Configuration', fields: ['title', 'subtitle', { key: 'description', type: 'textarea', label: 'Description' }, { key: 'image', type: 'image', label: 'Side Image' }, { key: 'bannerImage', type: 'image', label: 'Banner Image' }] }]
           },
           {
             id: 'feedback', title: 'Feedback Submissions', endpoint: 'feedback', type: 'collection', fields: [
