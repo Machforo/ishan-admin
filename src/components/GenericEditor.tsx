@@ -17,38 +17,62 @@ import {
   Copy
 } from 'lucide-react';
 import { siteConfigs, type Section, type Field } from '../config/siteConfigs';
+import { livePageUrl } from '../config/siteUrls';
 import { useAuth } from '../context/AuthContext';
 import JoditEditor from 'jodit-react';
 import { SECTION_TEMPLATES } from '../utils/sectionTemplates';
 
-const RichTextEditorField = ({ value, canUpdate, onChange }: { value: any, canUpdate?: boolean, onChange: (val: any) => void }) => {
+/**
+ * Rich text editor for CMS copy.
+ *
+ * Two things matter here and both used to be wrong:
+ *
+ *  1. `enter: "BR"` made Jodit emit bare text separated by <br>, so admins could
+ *     never produce real paragraphs. It now writes <p> blocks, and the frontend
+ *     `.rich-text` styles give them proper spacing.
+ *  2. Jodit only reported changes on blur. Clicking Save without first clicking
+ *     outside the editor silently discarded the edit. `onChange` now keeps state
+ *     in step as you type — storing Jodit's value verbatim, so the value prop
+ *     round-trips identically and the caret never jumps. Normalisation is
+ *     deferred to blur for the same reason.
+ */
+const RichTextEditorField = ({ value, canUpdate, onChange }: {
+  value: any,
+  canUpdate?: boolean,
+  onChange: (val: any) => void,
+}) => {
   const config = React.useMemo(() => ({
     readonly: !canUpdate,
-    height: 300,
+    height: 320,
     toolbarAdaptive: false,
     askBeforePasteHTML: false,
-    defaultActionOnPaste: "insert_clear_html" as any,
-    placeholder: 'Start typing here...',
-    enter: "BR" as any
+    // Keep formatting that Word/Docs pastes carry, drop their inline junk styles.
+    defaultActionOnPaste: 'insert_clear_html' as any,
+    placeholder: 'Start typing here…',
+    enter: 'P' as any,
+    statusbar: false,
+    buttons: [
+      'bold', 'italic', 'underline', 'strikethrough', '|',
+      'ul', 'ol', '|',
+      'paragraph', '|',
+      'link', 'table', '|',
+      'align', 'outdent', 'indent', '|',
+      'hr', 'eraser', '|',
+      'undo', 'redo', 'source',
+    ],
   }), [canUpdate]);
-
-  const handleBlur = (newContent: string) => {
-    let cleaned = newContent.trim();
-    // Strip outer <p> tags to prevent unwanted vertical margins on the frontend
-    if (cleaned.startsWith('<p>') && cleaned.endsWith('</p>')) {
-      const inner = cleaned.slice(3, -4).trim();
-      if (!inner.includes('<p>')) {
-        cleaned = inner;
-      }
-    }
-    onChange(cleaned);
-  };
 
   return (
     <JoditEditor
       value={value || ""}
       config={config}
-      onBlur={handleBlur}
+      // Verbatim while typing — anything else re-seeds the editor and moves the caret.
+      onChange={(newContent) => onChange(newContent)}
+      onBlur={(newContent) => {
+        const cleaned = (newContent || '').trim();
+        // Jodit represents "empty" as an empty paragraph; store "" so `||` fallbacks work.
+        onChange(/^<p>(\s|&nbsp;|<br\s*\/?>)*<\/p>$/i.test(cleaned) ? '' : cleaned);
+      }}
     />
   );
 };
@@ -59,13 +83,13 @@ interface GenericEditorProps {
   section: Section;
   onNavigate: (pageId: string, sectionId: string) => void;
   onRefreshConfigs?: () => void;
-  onLocalToggleVisibility?: (siteKey: string, pageId: string, sectionId: string, isHidden: boolean) => void;
-  onLocalDuplicate?: (siteKey: string, pageId: string, sectionId: string, newName: string, newUrlSlug: string) => void;
 }
 
-const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section, onNavigate, onRefreshConfigs, onLocalToggleVisibility, onLocalDuplicate }) => {
+const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section, onNavigate, onRefreshConfigs }) => {
   const { user } = useAuth();
   const [data, setData] = useState<any>(null);
+  /** Serialised copy of what the server last gave us, for unsaved-change detection. */
+  const [pristine, setPristine] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
@@ -80,6 +104,13 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
   const [togglingVisibility, setTogglingVisibility] = useState(false);
 
   const [uploadingImage, setUploadingImage] = useState<string | null>(null);
+
+  // Where this section lives on the public website — shown in the header so an
+  // admin can tell at a glance which page they are editing.
+  const currentSite = siteConfigs[siteKey];
+  const currentPage = currentSite?.pages.find((p) => p.id === pageId);
+  const livePath = section.path || currentPage?.path;
+  const liveUrl = livePageUrl(siteKey, livePath);
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, onChange: (val: string) => void, fieldKey: string) => {
     const file = e.target.files?.[0];
@@ -166,6 +197,7 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
     try {
       const response = await api.get(buildUrl(section.endpoint));
       setData(response.data);
+      setPristine(JSON.stringify(response.data ?? null));
       setEditingId(null);
       setEditForm(null);
       setBroadcastSites([]);
@@ -181,16 +213,33 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
     fetchSectionData();
   }, [siteKey, section]);
 
+  const isDirty = section.type === 'singleton' && pristine !== null && JSON.stringify(data ?? null) !== pristine;
+
+  // Closing the tab mid-edit used to lose the work without a word.
+  useEffect(() => {
+    if (!isDirty) return;
+    const warn = (e: BeforeUnloadEvent) => { e.preventDefault(); e.returnValue = ''; };
+    window.addEventListener('beforeunload', warn);
+    return () => window.removeEventListener('beforeunload', warn);
+  }, [isDirty]);
+
   const handleSaveSingleton = async () => {
     if (!canUpdate) return;
     setSaving(true);
     setStatus(null);
     try {
-      await api.put(buildUrl(section.endpoint), data);
-      setStatus({ type: 'success', message: 'Changes saved successfully!' });
-      setTimeout(() => setStatus(null), 3000);
-    } catch (err) {
-      setStatus({ type: 'error', message: 'Failed to save changes.' });
+      const response = await api.put(buildUrl(section.endpoint), data);
+      // Re-baseline from the server so the "unsaved" badge clears accurately.
+      if (response?.data) {
+        setData(response.data);
+        setPristine(JSON.stringify(response.data));
+      } else {
+        setPristine(JSON.stringify(data ?? null));
+      }
+      setStatus({ type: 'success', message: 'Changes saved. They are live on the website now.' });
+      setTimeout(() => setStatus(null), 4000);
+    } catch (err: any) {
+      setStatus({ type: 'error', message: err.response?.data?.message || 'Failed to save changes.' });
     } finally {
       setSaving(false);
     }
@@ -220,16 +269,7 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
       if (onRefreshConfigs) onRefreshConfigs();
       setTimeout(() => setStatus(null), 3000);
     } catch (err: any) {
-      console.warn("Backend failed, simulating on frontend.");
-      if (onLocalDuplicate) {
-        onLocalDuplicate(siteKey, pageId, section.isCloned ? ((section as any).originalSectionId || section.id) : section.id, duplicateForm.newName, duplicateForm.newUrlSlug);
-        setStatus({ type: 'success', message: 'Page duplicated (Local simulation)' });
-        setShowDuplicateModal(false);
-        setDuplicateForm({ newName: '', newUrlSlug: '' });
-        setTimeout(() => setStatus(null), 3000);
-      } else {
-        setStatus({ type: 'error', message: err.response?.data?.message || 'Failed to duplicate page.' });
-      }
+      setStatus({ type: 'error', message: err.response?.data?.message || 'Failed to duplicate page.' });
     } finally {
       setDuplicating(false);
     }
@@ -254,15 +294,8 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
       if (onRefreshConfigs) onRefreshConfigs();
       setStatus({ type: 'success', message: `Page is now ${!section.isHidden ? 'hidden' : 'visible'}.` });
       setTimeout(() => setStatus(null), 3000);
-    } catch (err) {
-      console.warn("Backend failed, simulating on frontend.");
-      if (onLocalToggleVisibility) {
-        onLocalToggleVisibility(siteKey, pageId, section.id, !section.isHidden);
-        setStatus({ type: 'success', message: `Page is now ${!section.isHidden ? 'hidden' : 'visible'} (Local simulation).` });
-        setTimeout(() => setStatus(null), 3000);
-      } else {
-        setStatus({ type: 'error', message: 'Failed to toggle visibility.' });
-      }
+    } catch (err: any) {
+      setStatus({ type: 'error', message: err.response?.data?.message || 'Failed to change visibility.' });
     } finally {
       setTogglingVisibility(false);
     }
@@ -372,7 +405,6 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
             />
           </div>
         );
-      case 'textarea':
       case 'richtext':
         return (
           <div className="space-y-1">
@@ -517,7 +549,7 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
                         className="text-slate-300 hover:text-slate-500 disabled:opacity-30 disabled:cursor-not-allowed"
                         title="Move Up"
                       >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m18 15-6-6-6 6" /></svg>
                       </button>
                       <button
                         onClick={() => {
@@ -530,7 +562,7 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
                         className="text-slate-300 hover:text-slate-500 disabled:opacity-30 disabled:cursor-not-allowed"
                         title="Move Down"
                       >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6" /></svg>
                       </button>
                       <button
                         onClick={() => onChange(items.filter((_: any, i: number) => i !== idx))}
@@ -683,9 +715,9 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
         </div>
       )}
 
-      <div className="flex items-center justify-between">
-        <div>
-          <div className="flex items-center gap-3">
+      <div className="flex items-start justify-between gap-6">
+        <div className="min-w-0">
+          <div className="flex items-center gap-3 flex-wrap">
             <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tight">{section.title}</h1>
             {section.isHidden && (
               <span className="px-2 py-1 bg-slate-100 text-slate-500 text-[10px] font-black uppercase rounded border border-slate-200">
@@ -698,7 +730,35 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
               </span>
             )}
           </div>
-          <p className="text-slate-400 text-xs font-bold  mt-1">Management Mode</p>
+
+          {/* Tell the admin exactly where this content shows up. */}
+          <div className="flex items-center gap-2 mt-2 text-xs text-slate-500 flex-wrap">
+            <span className="font-bold text-slate-600">{currentSite?.name || siteKey}</span>
+            <ChevronRight className="w-3 h-3 opacity-40" />
+            <span className="font-bold text-slate-600">{currentPage?.title || pageId}</span>
+            {livePath && (
+              <>
+                <ChevronRight className="w-3 h-3 opacity-40" />
+                <code className="px-1.5 py-0.5 bg-slate-100 rounded text-[11px] text-slate-600">{livePath}</code>
+              </>
+            )}
+            {liveUrl && (
+              <a
+                href={liveUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1 font-bold text-slate-500 hover:text-slate-900 transition-colors"
+              >
+                <ExternalLink className="w-3 h-3" /> View live page
+              </a>
+            )}
+          </div>
+
+          {(section.help || currentPage?.description) && (
+            <p className="mt-3 text-sm text-slate-500 max-w-2xl leading-relaxed">
+              {section.help || currentPage?.description}
+            </p>
+          )}
         </div>
 
         <div className="flex items-center gap-3">
@@ -715,11 +775,10 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
             <button
               onClick={handleToggleVisibility}
               disabled={togglingVisibility}
-              className={`px-4 py-2.5 rounded-xl font-bold transition-all flex items-center gap-2 text-sm border shadow-sm ${
-                section.isHidden 
-                  ? 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200' 
+              className={`px-4 py-2.5 rounded-xl font-bold transition-all flex items-center gap-2 text-sm border shadow-sm ${section.isHidden
+                  ? 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200'
                   : 'bg-white text-rose-600 border-rose-100 hover:bg-rose-50'
-              }`}
+                }`}
             >
               {togglingVisibility ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -733,14 +792,22 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
           )}
 
           {section.type === 'singleton' && canUpdate && (
-            <button
-              onClick={handleSaveSingleton}
-              disabled={saving}
-              className="bg-slate-900 text-white px-6 py-2.5 rounded-xl font-bold hover:bg-slate-800 transition-all flex items-center gap-2 disabled:opacity-50 text-sm shadow-sm"
-            >
-              {saving ? <Loader2 className="w-4 h-4 animate-spin text-white" /> : <Save className="w-4 h-4" />}
-              {saving ? 'Syncing...' : 'Save'}
-            </button>
+            <div className="flex items-center gap-3">
+              {isDirty && !saving && (
+                <span className="text-[10px] font-black uppercase tracking-wider text-amber-600 bg-amber-50 border border-amber-200 px-2.5 py-1.5 rounded-lg whitespace-nowrap">
+                  Unsaved changes
+                </span>
+              )}
+              <button
+                onClick={handleSaveSingleton}
+                disabled={saving || !isDirty}
+                title={isDirty ? 'Publish these changes to the website' : 'No changes to save'}
+                className="bg-slate-900 text-white px-6 py-2.5 rounded-xl font-bold hover:bg-slate-800 transition-all flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed text-sm shadow-sm"
+              >
+                {saving ? <Loader2 className="w-4 h-4 animate-spin text-white" /> : <Save className="w-4 h-4" />}
+                {saving ? 'Saving…' : 'Save & Publish'}
+              </button>
+            </div>
           )}
 
           {section.type === 'collection' && !editingId && !editForm && canCreate && (
@@ -820,38 +887,63 @@ const GenericEditor: React.FC<GenericEditorProps> = ({ siteKey, pageId, section,
 
       {section.type === 'collection' && Array.isArray(data) && !editingId && !editForm && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-in fade-in duration-500">
-          {data.map((item) => (
-            <div key={item._id} className="bg-white/70 backdrop-blur-md border border-white/20 p-6 rounded-[2rem] shadow-xl hover:-translate-y-1 transition-all group overflow-hidden">
-              <div className="flex justify-between items-start mb-4">
-                <div className="space-y-1 pr-4">
-                  <h4 className="font-bold text-slate-900 line-clamp-1">{item.programName || item.title || item.name || item.urlPath || item.url || 'Untitled'}</h4>
-                  <p className="text-[10px] font-black text-slate-400 ">{item.date ? new Date(item.date).toLocaleDateString() : (item.createdAt ? new Date(item.createdAt).toLocaleDateString() : 'Active Content')}</p>
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => { setEditingId(item._id); setEditForm(item); }}
-                    className="p-2.5 bg-slate-50 text-slate-500 rounded-xl hover:bg-slate-900 hover:text-white transition-all shadow-sm"
-                  >
-                    {canUpdate ? <Edit2 className="w-4 h-4" /> : <Loader2 className="w-4 h-4" />}
-                  </button>
-                  {canDelete && (
-                    <button
-                      onClick={(e) => handleDeleteItem(item._id, e)}
-                      className="p-2.5 bg-slate-50 text-rose-500 rounded-xl hover:bg-rose-500 hover:text-white transition-all shadow-sm"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  )}
-                </div>
-              </div>
+          {data.map((item) => {
+            const heading = item.programName || item.title || item.name || item.question || item.urlPath || item.url || 'Untitled';
+            const thumb = item.image || item.logo || item.photo || item.bannerImage || item.thumbnail || item.images?.[0]?.url;
+            // A readable second line beats the decorative placeholder bars that
+            // used to sit here — admins need to tell two items apart.
+            const summarySource = item.subtitle || item.designation || item.description || item.answer || item.overviewContent || item.content || item.desc;
+            const summary = typeof summarySource === 'string'
+              ? summarySource.replace(/<[^>]*>/g, ' ').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim()
+              : '';
+            const stamp = item.date || item.createdAt;
 
-              <div className="h-[1px] bg-slate-100 my-4" />
-              <div className="space-y-2 opacity-60">
-                <div className="w-full h-1 bg-slate-100 rounded-full" />
-                <div className="w-2/3 h-1 bg-slate-100 rounded-full" />
+            return (
+              <div key={item._id} className="bg-white/70 backdrop-blur-md border border-white/20 p-6 rounded-[2rem] shadow-xl hover:-translate-y-1 transition-all group overflow-hidden flex flex-col">
+                <div className="flex justify-between items-start gap-3 mb-4">
+                  <div className="flex gap-3 min-w-0">
+                    {thumb && (
+                      <img
+                        src={thumb}
+                        alt=""
+                        className="w-12 h-12 rounded-xl object-cover border border-slate-200 shrink-0 bg-slate-50"
+                        onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                      />
+                    )}
+                    <div className="space-y-1 min-w-0">
+                      <h4 className="font-bold text-slate-900 line-clamp-2 leading-snug">{heading}</h4>
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">
+                        {stamp ? new Date(stamp).toLocaleDateString() : 'Active content'}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2 shrink-0">
+                    <button
+                      onClick={() => { setEditingId(item._id); setEditForm(item); }}
+                      title={canUpdate ? 'Edit' : 'View'}
+                      className="p-2.5 bg-slate-50 text-slate-500 rounded-xl hover:bg-slate-900 hover:text-white transition-all shadow-sm"
+                    >
+                      <Edit2 className="w-4 h-4" />
+                    </button>
+                    {canDelete && (
+                      <button
+                        onClick={(e) => handleDeleteItem(item._id, e)}
+                        title="Delete"
+                        className="p-2.5 bg-slate-50 text-rose-500 rounded-xl hover:bg-rose-500 hover:text-white transition-all shadow-sm"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                <div className="h-[1px] bg-slate-100 mb-4" />
+                <p className="text-xs text-slate-500 leading-relaxed line-clamp-3">
+                  {summary || <span className="italic text-slate-300">No description yet</span>}
+                </p>
               </div>
-            </div>
-          ))}
+            );
+          })}
           {(data as any[]).length === 0 && (
             <div className="col-span-full py-20 text-center border-2 border-dashed border-slate-200 rounded-[2.5rem]">
               <p className="text-slate-400 font-bold  text-xs italic">No items found in this collection.</p>

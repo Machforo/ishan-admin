@@ -184,7 +184,10 @@ const AppContent = () => {
               ...origSection,
               id: cp._id, // Use DB id as section id
               title: cp.newName,
-              endpoint: `cloned-pages/${cp._id}`,
+              // Leading "^" tells GenericEditor.buildUrl to skip the site prefix —
+              // cloned pages live at a top-level route, not under /api/<site>/.
+              endpoint: `^cloned-pages/${cp._id}/content`,
+              originalSectionId: cp.originalSectionId,
               isCloned: true,
               isHidden: cp.isHidden,
               newUrlSlug: cp.newUrlSlug
@@ -245,47 +248,6 @@ const AppContent = () => {
     } else {
       setSelectedSection('');
     }
-  };
-
-  const handleLocalToggleVisibility = (siteKey: string, pageId: string, sectionId: string, isHidden: boolean) => {
-    setDynamicConfigs((prev: any) => {
-      const next = JSON.parse(JSON.stringify(prev));
-      const site = next[siteKey];
-      if (site) {
-        const page = site.pages.find((p: any) => p.id === pageId);
-        if (page) {
-          const section = page.sections.find((s: any) => s.id === sectionId);
-          if (section) section.isHidden = isHidden;
-        }
-      }
-      return next;
-    });
-  };
-
-  const handleLocalDuplicate = (siteKey: string, pageId: string, sectionId: string, newName: string, newUrlSlug: string) => {
-    setDynamicConfigs((prev: any) => {
-      const next = JSON.parse(JSON.stringify(prev));
-      const site = next[siteKey];
-      if (site) {
-        const page = site.pages.find((p: any) => p.id === pageId);
-        const origSite = siteConfigs[siteKey];
-        const origPage = origSite?.pages.find((p: any) => p.id === pageId);
-        const origSection = origPage?.sections.find((s: any) => s.id === sectionId);
-        
-        if (page && origSection) {
-          page.sections.push({
-            ...origSection,
-            id: 'mock_cloned_' + Date.now(),
-            title: newName,
-            endpoint: `cloned-pages/mock`,
-            isCloned: true,
-            isHidden: false,
-            newUrlSlug: newUrlSlug
-          });
-        }
-      }
-      return next;
-    });
   };
 
   const currentSiteConfig = dynamicConfigs[selectedSite];
@@ -377,8 +339,6 @@ const AppContent = () => {
                 setSelectedSection(sectionId);
               }}
               onRefreshConfigs={loadDynamicData}
-              onLocalToggleVisibility={handleLocalToggleVisibility}
-              onLocalDuplicate={handleLocalDuplicate}
             />
           ) : (
             <div className="h-[60vh] flex items-center justify-center text-slate-400 italic">
