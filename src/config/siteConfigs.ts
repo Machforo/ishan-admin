@@ -1077,6 +1077,13 @@ export const siteConfigs: Record<string, SiteConfig> = {
             endpoint: "leads",
             type: "collection",
             fields: [
+              { key: 'name', type: 'text', label: 'Name' },
+              { key: 'email', type: 'text', label: 'Email' },
+              { key: 'phone', type: 'text', label: 'Phone' },
+              { key: 'course', type: 'text', label: 'Service/Department' },
+              { key: 'message', type: 'textarea', label: 'Message' },
+              { key: 'source', type: 'text', label: 'Source' },
+              { key: 'status', type: 'select', label: 'Status', options: [{ label: 'New', value: 'New' }, { label: 'Contacted', value: 'Contacted' }, { label: 'Closed', value: 'Closed' }] }
             ]
           }
         ]
@@ -1573,6 +1580,13 @@ export const siteConfigs: Record<string, SiteConfig> = {
           },
           {
             id: 'leads', title: 'Admission Leads', endpoint: 'leads', type: 'collection', fields: [
+              { key: 'name', type: 'text', label: 'Name' },
+              { key: 'email', type: 'text', label: 'Email' },
+              { key: 'phone', type: 'text', label: 'Phone' },
+              { key: 'course', type: 'text', label: 'Course' },
+              { key: 'message', type: 'textarea', label: 'Message' },
+              { key: 'source', type: 'text', label: 'Source' },
+              { key: 'status', type: 'select', label: 'Status', options: [{ label: 'New', value: 'New' }, { label: 'Contacted', value: 'Contacted' }, { label: 'Closed', value: 'Closed' }] }
             ]
           }
         ]
@@ -1944,6 +1958,13 @@ export const siteConfigs: Record<string, SiteConfig> = {
           },
           {
             id: 'leads', title: 'Admission Leads', endpoint: 'leads', type: 'collection', fields: [
+              { key: 'name', type: 'text', label: 'Name' },
+              { key: 'email', type: 'text', label: 'Email' },
+              { key: 'phone', type: 'text', label: 'Phone' },
+              { key: 'course', type: 'text', label: 'Course' },
+              { key: 'message', type: 'textarea', label: 'Message' },
+              { key: 'source', type: 'text', label: 'Source' },
+              { key: 'status', type: 'select', label: 'Status', options: [{ label: 'New', value: 'New' }, { label: 'Contacted', value: 'Contacted' }, { label: 'Closed', value: 'Closed' }] }
             ]
           }
         ]
