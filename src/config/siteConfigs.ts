@@ -106,6 +106,11 @@ export const siteConfigs: Record<string, SiteConfig> = {
     baseUrl: "iimt",
     pages: [
       {
+        id: 'page_layout',
+        title: '📐 Section Movement & Layout',
+        sections: []
+      },
+      {
         id: 'url_based_galleries',
         title: 'URL-Based Galleries',
         sections: [
@@ -287,35 +292,35 @@ export const siteConfigs: Record<string, SiteConfig> = {
               { key: "ourStory", type: "object", label: "Our Story", fields: [{ key: "image", type: "image", label: "Image" }, { key: "bannerImage", type: "image", label: "Banner Image" }, { key: "editorialPhotos", type: "array", label: "Editorial Photos", fields: [{ key: "url", type: "image", label: "Image" }] }, { key: "timelineInfographic", type: "image", label: "Timeline Infographic (Single Image)" }, { key: "timelineImages", type: "array", label: "Timeline Infographics (Multiple Images)", fields: [{ key: "url", type: "image", label: "Image" }] }, "description"] }, { key: "ourJourney", type: "array", label: "Our Journey (Milestones)", fields: ["year", "event"] }, { key: "keyDifferentiators", type: "array", label: "Key Differentiators", fields: ["title", "description"] }]
           },
           {
-            id: "director_message", title: "Director's Message", endpoint: "aboutus", type: "singleton", fields: [
+            id: "director_message", title: "Director's Message", endpoint: "aboutus", type: "singleton", path: "/director-message", fields: [
               { key: "directorMessage", type: "object", label: "Message Details", fields: ["name", "designation", { key: "image", type: "image", label: "Image" }, { key: "candidImage", type: "image", label: "Candid Image" }, "message"] }]
           },
           {
-            id: "vision_mission", title: "Mission & Vision", endpoint: "aboutus", type: "singleton", fields: [
+            id: "vision_mission", title: "Mission & Vision", endpoint: "aboutus", type: "singleton", path: "/mission-vision", fields: [
               { key: "missionVision", type: "object", label: "Foundations", fields: [{ key: "vision", type: "textarea", label: "Our Vision" }, { key: "mission", type: "textarea", label: "Our Mission" }, { key: "coreValues", type: "array", label: "Core Values", fields: ["text"] }, { key: "bannerImage", type: "image", label: "Banner Image" }, { key: "editorialPhotos", type: "array", label: "Editorial Photos", fields: [{ key: "url", type: "image", label: "Image" }] }] }]
           },
           {
-            id: "approvals", title: "Approvals & Affiliations", endpoint: "aboutus", type: "singleton", fields: [
+            id: "approvals", title: "Approvals & Affiliations", endpoint: "aboutus", type: "singleton", path: "/approvals", fields: [
               { key: "approvalsAffiliations", type: "array", label: "Certifications", fields: [{ key: "name", type: "text", label: "Name" }, { key: "image", type: "image", label: "Logo/Certificate" }, { key: "subheading", type: "text", label: "Subheading" }, { key: "description", type: "textarea", label: "Description" }] }, { key: "campusCredibilityPhoto", type: "image", label: "Campus Credibility Photo" }]
           },
           {
-            id: "why_iimt", title: "Why IIMT?", endpoint: "aboutus", type: "singleton", fields: [
+            id: "why_iimt", title: "Why IIMT?", endpoint: "aboutus", type: "singleton", path: "/why-iimt", fields: [
               { key: "whyIimt", type: "object", label: "Content", fields: ["content", { key: "bannerImage", type: "image", label: "Banner Image" }, { key: "images", type: "array", label: "Images", fields: [{ key: "url", type: "image", label: "Image" }] }] }]
           },
           {
-            id: "best_practices", title: "Best Practices", endpoint: "aboutus", type: "singleton", fields: [
+            id: "best_practices", title: "Best Practices", endpoint: "aboutus", type: "singleton", path: "/best-practices", fields: [
               { key: "bestPractices", type: "array", label: "List", fields: ["title", "content", { key: "image", type: "image", label: "Image" }] }, { key: "bestPracticesBanner", type: "image", label: "Best Practices Banner" }]
           },
           {
-            id: "green_initiatives", title: "Green Initiatives", endpoint: "aboutus", type: "singleton", fields: [
+            id: "green_initiatives", title: "Green Initiatives", endpoint: "aboutus", type: "singleton", path: "/green-initiatives", fields: [
               { key: "greenInitiatives", type: "object", label: "Content", fields: ["content", { key: "bannerImage", type: "image", label: "Banner Image" }, { key: "images", type: "array", label: "Images", fields: [{ key: "url", type: "image", label: "Image" }] }] }]
           },
           {
-            id: "mandatory_disclosure", title: "Mandatory Disclosure", endpoint: "aboutus", type: "singleton", fields: [
+            id: "mandatory_disclosure", title: "Mandatory Disclosure", endpoint: "aboutus", type: "singleton", path: "/mandatory-disclosure", fields: [
               { key: "mandatoryDisclosure", type: "object", label: "Mandatory Disclosure Content", fields: [{ key: "bannerImage", type: "image", label: "Banner Image" }, { key: "complianceStatement", type: "textarea", label: "Compliance Statement" }, { key: "downloadPdfUrl", type: "text", label: "Download PDF URL" }, { key: "disclosures", type: "array", label: "Disclosures List", fields: [{ key: "category", type: "text", label: "Category" }, { key: "items", type: "array", label: "Items", fields: ["text"] }] }] }]
           },
           {
-            id: "research_journal", title: "Research Journal", endpoint: "aboutus", type: "singleton", fields: [
+            id: "research_journal", title: "Research Journal", endpoint: "aboutus", type: "singleton", path: "/research-journal", fields: [
               { key: "researchJournal", type: "object", label: "Research Journal Details", fields: [{ key: "bannerImage", type: "image", label: "Banner Image" }, { key: "description", type: "textarea", label: "Description" }, { key: "issn", type: "text", label: "ISSN" }, { key: "frequency", type: "text", label: "Frequency" }, { key: "ugcCare", type: "text", label: "UGC CARE Status" }, { key: "peerReviewed", type: "text", label: "Peer Reviewed Status" }, { key: "websiteUrl", type: "text", label: "Journal Website URL" }] }]
           },
           // --- Redirections for DRY Principle (Navbar Mirror) ---
@@ -357,52 +362,52 @@ export const siteConfigs: Record<string, SiteConfig> = {
       },
       {
         id: "academics", title: "Academics", sections: [{
-          id: "education_overview", title: "Education Overview", endpoint: "academics", type: "singleton", fields: [
+          id: "education_overview", title: "Education Overview", endpoint: "academics", type: "singleton", path: "/education-overview", fields: [
             { key: "educationOverview", type: "object", label: "Overview", fields: [{ key: "description", type: "textarea", label: "Description" }, { key: "highlights", type: "string_array", label: "Highlights", fields: ["text"] }, { key: "bannerImage", type: "image", label: "Banner Image" }, { key: "editorialPhotos", type: "array", label: "Editorial Photos", fields: [{ key: "url", type: "image", label: "Image" }] }, { key: "infographicImage", type: "image", label: "Infographic Image" }] }]
         }, {
-          id: "pedagogy_labs", title: "Pedagogy Labs", endpoint: "academics", type: "singleton", fields: [
+          id: "pedagogy_labs", title: "Pedagogy Labs", endpoint: "academics", type: "singleton", path: "/pedagogy-labs", fields: [
             { key: "pedagogyLabs", type: "object", label: "Labs Info", fields: [{ key: "introTitle", type: "text", label: "Intro Title" }, { key: "introDesc", type: "textarea", label: "Intro Description" }, { key: "introPoints", type: "string_array", label: "Intro Points", fields: ["text"] }, { key: "facilities", type: "array", label: "Facilities", fields: ["title", "description", "icon"] }, { key: "practiceTeachingDesc", type: "textarea", label: "Practice Teaching Description" }, { key: "equipmentWideImage", type: "image", label: "Equipment Wide Image" }, { key: "equipmentCloseups", type: "array", label: "Equipment Closeups", fields: [{ key: "url", type: "image", label: "Image" }] }, { key: "studentsWorkingImages", type: "array", label: "Students Working Images", fields: [{ key: "url", type: "image", label: "Image" }] }, { key: "safetySignageImage", type: "image", label: "Safety Signage Image" }, { key: "practiceTeachingImage", type: "image", label: "Practice Teaching Image" }] }]
         }, {
-          id: "certificate_programs", title: "Certificate Programs", endpoint: "academics", type: "singleton", fields: [
+          id: "certificate_programs", title: "Certificate Programs", endpoint: "academics", type: "singleton", path: "/certificate-programs", fields: [
             { key: "certificatePrograms", type: "object", label: "Programs Info", fields: [{ key: "introText", type: "textarea", label: "Intro Text" }, { key: "programs", type: "array", label: "Programs", fields: ["name", "duration", "fee", "eligibility", "desc"] }] }]
         }]
       },
       {
         id: "campus_life", title: "Campus Life", sections: [
           {
-            id: "infrastructure", title: "Infrastructure", endpoint: "campuslife", type: "singleton", fields: [
+            id: "infrastructure", title: "Infrastructure", endpoint: "campuslife", type: "singleton", path: "/infrastructure", fields: [
               { key: "infrastructure", type: "object", label: "Details", fields: [{ key: "image", type: "image", label: "Image" }, { key: "content", type: "textarea", label: "Content" }, { key: "facilities", type: "array", label: "Facilities", fields: ["icon", "title", "desc", "link"] }, { key: "heroWideAngle", type: "image", label: "Hero Wide Angle" }, { key: "eventPhoto", type: "image", label: "Event Photo" }, { key: "entranceImage", type: "image", label: "Entrance Image" }, { key: "interiorDetails", type: "array", label: "Interior Details", fields: [{ key: "url", type: "image", label: "Image" }] }] }]
           },
           {
-            id: "it_labs", title: "IT Labs", endpoint: "campuslife", type: "singleton", fields: [
+            id: "it_labs", title: "IT Labs", endpoint: "campuslife", type: "singleton", path: "/it-lab", fields: [
               { key: "itLabs", type: "object", label: "Lab Info", fields: [{ key: "specs", type: "object", label: "Specifications", fields: ["computers", "internetSpeed", "software", "timings"] }, { key: "rules", type: "array", label: "Lab Rules", fields: ["text"] }, { key: "equipmentWideImage", type: "image", label: "Equipment Wide Image" }, { key: "equipmentCloseups", type: "array", label: "Equipment Closeups", fields: [{ key: "url", type: "image", label: "Image" }] }, { key: "studentsWorkingImages", type: "array", label: "Students Working Images", fields: [{ key: "url", type: "image", label: "Image" }] }, { key: "safetySignageImage", type: "image", label: "Safety Signage Image" }] }]
           },
           {
-            id: "library", title: "Library", endpoint: "campuslife", type: "singleton", fields: [
+            id: "library", title: "Library", endpoint: "campuslife", type: "singleton", path: "/library", fields: [
               { key: "library", type: "object", label: "Library Assets", fields: [{ key: "image", type: "image", label: "Image" }, { key: "content", type: "textarea", label: "Content" }, { key: "specs", type: "array", label: "Specifications", fields: ["label", "value"] }, { key: "equipmentWideImage", type: "image", label: "Equipment Wide Image" }, { key: "equipmentCloseups", type: "array", label: "Equipment Closeups", fields: [{ key: "url", type: "image", label: "Image" }] }, { key: "studentsWorkingImages", type: "array", label: "Students Working Images", fields: [{ key: "url", type: "image", label: "Image" }] }, { key: "safetySignageImage", type: "image", label: "Safety Signage Image" }] }]
           },
           {
-            id: "auditorium", title: "Auditorium", endpoint: "campuslife", type: "singleton", fields: [
+            id: "auditorium", title: "Auditorium", endpoint: "campuslife", type: "singleton", path: "/auditorium", fields: [
               { key: "auditorium", type: "object", label: "Event Space", fields: [{ key: "image", type: "image", label: "Image" }, { key: "content", type: "textarea", label: "Content" }, { key: "specs", type: "array", label: "Specifications", fields: ["label", "value"] }, { key: "heroWideAngle", type: "image", label: "Hero Wide Angle" }, { key: "eventPhoto", type: "image", label: "Event Photo" }, { key: "entranceImage", type: "image", label: "Entrance Image" }, { key: "interiorDetails", type: "array", label: "Interior Details", fields: [{ key: "url", type: "image", label: "Image" }] }] }]
           },
           {
-            id: "sports", title: "Sports", endpoint: "campuslife", type: "singleton", fields: [
+            id: "sports", title: "Sports", endpoint: "campuslife", type: "singleton", path: "/sports", fields: [
               { key: "sports", type: "object", label: "Facilities", fields: [{ key: "content", type: "textarea", label: "Content" }, { key: "specs", type: "array", label: "Specifications", fields: ["label", "value"] }, { key: "heroWideAngle", type: "image", label: "Hero Wide Angle" }, { key: "eventPhoto", type: "image", label: "Event Photo" }, { key: "entranceImage", type: "image", label: "Entrance Image" }, { key: "interiorDetails", type: "array", label: "Interior Details", fields: [{ key: "url", type: "image", label: "Image" }] }] }]
           },
           {
-            id: "hostel", title: "Hostel", endpoint: "campuslife", type: "singleton", fields: [
+            id: "hostel", title: "Hostel", endpoint: "campuslife", type: "singleton", path: "/hostel", fields: [
               { key: "hostel", type: "object", label: "Details", fields: [{ key: "image", type: "image", label: "Image" }, { key: "content", type: "textarea", label: "Content" }, { key: "amenities", type: "array", label: "Amenities", fields: ["text"] }, { key: "specs", type: "array", label: "Fees & Specs", fields: ["label", "value"] }, { key: "roomInteriors", type: "array", label: "Room Interiors", fields: [{ key: "url", type: "image", label: "Image" }] }, { key: "washroomImages", type: "array", label: "Washroom Images", fields: [{ key: "url", type: "image", label: "Image" }] }, { key: "diningHallImages", type: "array", label: "Dining Hall Images", fields: [{ key: "url", type: "image", label: "Image" }] }, { key: "commonRoomImages", type: "array", label: "Common Room Images", fields: [{ key: "url", type: "image", label: "Image" }] }, { key: "securityCctvImages", type: "array", label: "Security/CCTV Images", fields: [{ key: "url", type: "image", label: "Image" }] }] }]
           },
           {
-            id: "cultural", title: "Cultural Activities", endpoint: "campuslife", type: "singleton", fields: [
+            id: "cultural", title: "Cultural Activities", endpoint: "campuslife", type: "singleton", path: "/cultural-activities", fields: [
               { key: "culturalActivities", type: "object", label: "Highlights", fields: [{ key: "content", type: "textarea", label: "Content" }, { key: "specs", type: "array", label: "Specifications", fields: ["label", "value"] }, { key: "performancesImages", type: "array", label: "Performances Images", fields: [{ key: "url", type: "image", label: "Image" }] }, { key: "competitionsImages", type: "array", label: "Competitions Images", fields: [{ key: "url", type: "image", label: "Image" }] }, { key: "crowdShotsImages", type: "array", label: "Crowd Shots Images", fields: [{ key: "url", type: "image", label: "Image" }] }, { key: "prizeCeremonyImages", type: "array", label: "Prize Ceremony Images", fields: [{ key: "url", type: "image", label: "Image" }] }] }]
           },
           {
-            id: "faculty", title: "Faculty Directory", endpoint: "campuslife", type: "singleton", fields: [
+            id: "faculty", title: "Faculty Directory", endpoint: "campuslife", type: "singleton", path: "/faculty", fields: [
               { key: "faculty", type: "array", label: "Faculty Directory", fields: ["name", "designation", "dept", "qualification", "specialisation", { key: "image", type: "image", label: "Image" }] }]
           },
           {
-            id: "visiting_faculty", title: "Visiting Faculty", endpoint: "campuslife", type: "singleton", fields: [
+            id: "visiting_faculty", title: "Visiting Faculty", endpoint: "campuslife", type: "singleton", path: "/visiting-faculty", fields: [
               { key: "visitingFaculty", type: "array", label: "Visiting Faculty Directory", fields: ["name", "org", "specialisation", "dept", { key: "image", type: "image", label: "Image" }] }]
           },
           // --- Redirections for Learning & Activities ---
@@ -448,23 +453,23 @@ export const siteConfigs: Record<string, SiteConfig> = {
       {
         id: "learning_activities", title: "Learning & Activities", sections: [
           {
-            id: "calendar_events", title: "Events Calendar", endpoint: "learning", type: "singleton", fields: [
+            id: "calendar_events", title: "Events Calendar", endpoint: "learning", type: "singleton", path: "/events-calendar", fields: [
               { key: "eventsCalendar", type: "object", label: "Events Calendar", fields: [{ key: "pageTitle", type: "text", label: "Page Title" }, { key: "pageSubtitle", type: "textarea", label: "Page Subtitle" }, { key: "subheading", type: "text", label: "Subheading" }, { key: "heading", type: "text", label: "Heading" }, { key: "description", type: "textarea", label: "Description" }, { key: "ctaText1", type: "text", label: "CTA Button 1" }, { key: "ctaText2", type: "text", label: "CTA Button 2" }, { key: "registerText", type: "text", label: "Register Button Text" }, { key: "events", type: "array", label: "Events", fields: ["name", "date", "venue", "category", "description", { key: "image", type: "image", label: "Event Thumbnail" }] }] }]
           },
           {
-            id: "skill_development", title: "Skill Development", endpoint: "learning", type: "singleton", fields: [
+            id: "skill_development", title: "Skill Development", endpoint: "learning", type: "singleton", path: "/skill-development", fields: [
               { key: "skillDevelopment", type: "object", label: "Skill Dev", fields: [{ key: "pageTitle", type: "text", label: "Page Title" }, { key: "pageSubtitle", type: "textarea", label: "Page Subtitle" }, { key: "description", type: "textarea", label: "Description" }, { key: "bannerImage", type: "image", label: "Banner Image" }, { key: "images", type: "array", label: "Gallery Photos", fields: [{ key: "url", type: "image", label: "Image" }] }, { key: "skills", type: "array", label: "Skills List", fields: ["text"] }] }]
           },
           {
-            id: "debates_gd", title: "Debates & GD", endpoint: "learning", type: "singleton", fields: [
+            id: "debates_gd", title: "Debates & GD", endpoint: "learning", type: "singleton", path: "/debates-gd", fields: [
               { key: "debatesGD", type: "object", label: "Debates Info", fields: [{ key: "pageTitle", type: "text", label: "Page Title" }, { key: "pageSubtitle", type: "textarea", label: "Page Subtitle" }, { key: "subheading", type: "text", label: "Subheading" }, { key: "heading", type: "text", label: "Heading" }, { key: "description", type: "textarea", label: "Description" }, { key: "participationLabel", type: "text", label: "Participation Label" }, { key: "participationPoints", type: "array", label: "Participation Info", fields: ["text"] }, { key: "activities", type: "array", label: "Activities", fields: ["title", "description", "icon"] }, { key: "highlightsHeading", type: "text", label: "Highlights Heading" }, { key: "pastHighlights", type: "textarea", label: "Past Highlights" }, { key: "highlightsFooter", type: "textarea", label: "Highlights Footer Text" }, { key: "bannerImage", type: "image", label: "Banner Image" }, { key: "images", type: "array", label: "Gallery Photos", fields: [{ key: "url", type: "image", label: "Image" }] }] }]
           },
           {
-            id: "industrial_visits", title: "Industrial Visits", endpoint: "learning", type: "singleton", fields: [
+            id: "industrial_visits", title: "Industrial Visits", endpoint: "learning", type: "singleton", path: "/industrial-visits", fields: [
               { key: "industrialVisits", type: "object", label: "Visits Info", fields: [{ key: "pageTitle", type: "text", label: "Page Title" }, { key: "pageSubtitle", type: "textarea", label: "Page Subtitle" }, { key: "subheading", type: "text", label: "Subheading" }, { key: "heading", type: "text", label: "Heading" }, { key: "description", type: "textarea", label: "Description" }, { key: "sectors", type: "array", label: "Sectors Grid", fields: ["label", "icon"] }, { key: "whyVisitsMatterHeading", type: "text", label: "Why Visits Matter Heading" }, { key: "whyVisitsMatter", type: "array", label: "Why Visits Matter", fields: ["text"] }, { key: "recentVisitsHeading", type: "text", label: "Recent Visits Heading" }, { key: "visits", type: "array", label: "Visits", fields: ["company", "sector", "program", "year", "outcome", { key: "image", type: "image", label: "Visit Thumbnail" }] }] }]
           },
           {
-            id: "guest_lectures", title: "Guest Lectures", endpoint: "learning", type: "singleton", fields: [
+            id: "guest_lectures", title: "Guest Lectures", endpoint: "learning", type: "singleton", path: "/guest-lectures", fields: [
               { key: "guestLectures", type: "object", label: "Lectures Info", fields: [{ key: "pageTitle", type: "text", label: "Page Title" }, { key: "pageSubtitle", type: "textarea", label: "Page Subtitle" }, { key: "subheading", type: "text", label: "Subheading" }, { key: "heading", type: "text", label: "Heading" }, { key: "description", type: "textarea", label: "Description" }, { key: "whatToExpectTitle", type: "text", label: "What To Expect Title" }, { key: "whatToExpectDesc", type: "textarea", label: "What To Expect Description" }, { key: "nationalSeminarsHeading", type: "text", label: "Seminars Heading" }, { key: "nationalSeminars", type: "textarea", label: "Seminars Text" }, { key: "events", type: "array", label: "Lecture Events", fields: ["speaker", "designation", "topic", "date", "takeaways", { key: "image", type: "image", label: "Lecture Thumbnail" }] }] }]
           }
         ]
@@ -472,27 +477,27 @@ export const siteConfigs: Record<string, SiteConfig> = {
       {
         id: "student_zone", title: "Student Zone", sections: [
           {
-            id: "downloads", title: "Downloads", endpoint: "studentzone", type: "singleton", fields: [
+            id: "downloads", title: "Downloads", endpoint: "studentzone", type: "singleton", path: "/downloads", fields: [
               { key: "downloads", type: "object", label: "Downloads Config", fields: [{ key: "pageTitle", type: "text", label: "Page Title" }, { key: "pageSubtitle", type: "textarea", label: "Page Subtitle" }, { key: "bannerImage", type: "image", label: "Banner Image" }, { key: "files", type: "array", label: "Files", fields: ["name", "fileType", "category", "size", "link"] }] }]
           },
           {
-            id: "past_papers", title: "Past Exam Papers", endpoint: "studentzone", type: "singleton", fields: [
+            id: "past_papers", title: "Past Exam Papers", endpoint: "studentzone", type: "singleton", path: "/past-papers", fields: [
               { key: "pastPapers", type: "object", label: "Past Papers Config", fields: [{ key: "pageTitle", type: "text", label: "Page Title" }, { key: "pageSubtitle", type: "textarea", label: "Page Subtitle" }, { key: "subheading", type: "text", label: "Subheading" }, { key: "heading", type: "text", label: "Heading" }, { key: "description", type: "textarea", label: "Description" }, { key: "footerText", type: "text", label: "Footer Text" }, { key: "bannerImage", type: "image", label: "Banner Image" }, { key: "papers", type: "array", label: "Papers", fields: ["program", "year", "name", "size", "link", "semester"] }] }]
           },
           {
-            id: "code_of_conduct", title: "Code of Conduct", endpoint: "studentzone", type: "singleton", fields: [
+            id: "code_of_conduct", title: "Code of Conduct", endpoint: "studentzone", type: "singleton", path: "/code-of-conduct", fields: [
               { key: "codeOfConduct", type: "object", label: "Content", fields: [{ key: "pageTitle", type: "text", label: "Page Title" }, { key: "pageSubtitle", type: "textarea", label: "Page Subtitle" }, { key: "bannerImage", type: "image", label: "Banner Image" }, { key: "content", type: "textarea", label: "Rich Text Content" }] }]
           },
           {
-            id: "anti_ragging", title: "Anti-Ragging", endpoint: "studentzone", type: "singleton", fields: [
+            id: "anti_ragging", title: "Anti-Ragging", endpoint: "studentzone", type: "singleton", path: "/anti-ragging", fields: [
               { key: "antiRagging", type: "object", label: "Content", fields: [{ key: "pageTitle", type: "text", label: "Page Title" }, { key: "pageSubtitle", type: "textarea", label: "Page Subtitle" }, { key: "helplinePhone", type: "text", label: "Helpline Phone" }, { key: "bannerImage", type: "image", label: "Banner Image" }, { key: "content", type: "textarea", label: "Rich Text Content" }] }]
           },
           {
-            id: "grievance_redressal", title: "Grievance Redressal", endpoint: "studentzone", type: "singleton", fields: [
+            id: "grievance_redressal", title: "Grievance Redressal", endpoint: "studentzone", type: "singleton", path: "/grievance-redressal", fields: [
               { key: "grievanceRedressal", type: "object", label: "Content", fields: [{ key: "pageTitle", type: "text", label: "Page Title" }, { key: "pageSubtitle", type: "textarea", label: "Page Subtitle" }, { key: "bannerImage", type: "image", label: "Banner Image" }, { key: "content", type: "textarea", label: "Rich Text Content" }] }]
           },
           {
-            id: "privacy_policy", title: "Privacy Policy", endpoint: "studentzone", type: "singleton", fields: [
+            id: "privacy_policy", title: "Privacy Policy", endpoint: "studentzone", type: "singleton", path: "/privacy-policy", fields: [
               { key: "privacyPolicy", type: "object", label: "Content", fields: [{ key: "pageTitle", type: "text", label: "Page Title" }, { key: "pageSubtitle", type: "textarea", label: "Page Subtitle" }, { key: "bannerImage", type: "image", label: "Banner Image" }, { key: "content", type: "textarea", label: "Rich Text Content" }] }]
           },
           // --- Redirections for DRY Principle (Navbar Mirror) ---
@@ -728,6 +733,7 @@ export const siteConfigs: Record<string, SiteConfig> = {
           }
         ]
       },
+      { id: 'page_layout', title: '📐 Section Movement & Layout', sections: [] },
       { id: 'dynamic_pages', title: 'Custom Pages', sections: [] },
       {
         id: "homepage",
@@ -1206,6 +1212,11 @@ export const siteConfigs: Record<string, SiteConfig> = {
     baseUrl: "legal",
     pages: [
       {
+        id: 'page_layout',
+        title: '📐 Section Movement & Layout',
+        sections: []
+      },
+      {
         id: 'url_based_galleries',
         title: 'URL-Based Galleries',
         sections: [
@@ -1355,51 +1366,51 @@ export const siteConfigs: Record<string, SiteConfig> = {
         title: 'About Us',
         sections: [
           {
-            id: 'aboutus', title: 'About Us Page', endpoint: 'aboutus', type: 'singleton', fields: [
+            id: 'aboutus', title: 'About Us Page', endpoint: 'aboutus', type: 'singleton', path: '/about', fields: [
               { key: 'ourStory', type: 'object', label: 'Our Story', fields: ['title', { key: 'content', type: 'longtext', label: 'Content' }, { key: 'image', type: 'image', label: 'Image' }] }, { key: 'keyDifferentiators', type: 'array', label: 'Key Differentiators', fields: ['title'] }, { key: 'milestones', type: 'array', label: 'Milestones', fields: ['year', 'title', 'desc'] }, { key: 'bannerImage', type: 'image', label: 'Banner Image' }, { key: 'editorialPhotos', type: 'array', label: 'Editorial Photos', fields: [{ key: 'url', type: 'image', label: 'Image' }] }]
           },
           {
-            id: 'principal_message', title: "Principal's Message", endpoint: 'aboutus', type: 'singleton', fields: [
+            id: 'principal_message', title: "Principal's Message", endpoint: 'aboutus', type: 'singleton', path: '/director-message', fields: [
               { key: 'principalMessage', type: 'object', label: "Principal's Message", fields: ['name', 'designation', { key: 'message', type: 'longtext', label: 'Message' }, { key: 'image', type: 'image', label: 'Image' }] }]
           },
           {
-            id: 'mission_vision', title: 'Mission & Vision', endpoint: 'aboutus', type: 'singleton', fields: [
+            id: 'mission_vision', title: 'Mission & Vision', endpoint: 'aboutus', type: 'singleton', path: '/mission-vision', fields: [
               { key: 'missionVision', type: 'object', label: 'Mission & Vision', fields: [{ key: 'mission', type: 'longtext', label: 'Mission' }, { key: 'vision', type: 'longtext', label: 'Vision' }, { key: 'coreValues', type: 'longtext', label: 'Core Values (newline separated)' }, { key: 'image1', type: 'image', label: 'Image 1' }, { key: 'image2', type: 'image', label: 'Image 2' }] }]
           },
           {
-            id: 'approvals', title: 'Approvals & Affiliations', endpoint: 'aboutus', type: 'singleton', fields: [
+            id: 'approvals', title: 'Approvals & Affiliations', endpoint: 'aboutus', type: 'singleton', path: '/approvals', fields: [
               { key: 'approvalsPageBanner', type: 'image', label: 'Banner Image' }, { key: 'approvalsHeading', type: 'text', label: 'Heading' }, { key: 'approvalsDescription', type: 'longtext', label: 'Description' }, { key: 'approvals', type: 'array', label: 'Approvals', fields: ['title', { key: 'description', type: 'longtext', label: 'Description' }, { key: 'logo', type: 'image', label: 'Logo' }] }]
           },
           {
-            id: 'why_ishan_law', title: 'Why Choose Us', endpoint: 'aboutus', type: 'singleton', fields: [
+            id: 'why_ishan_law', title: 'Why Choose Us', endpoint: 'aboutus', type: 'singleton', path: '/why-iimt', fields: [
               { key: 'WhyIshanLaw', type: 'object', label: 'Why Choose Us', fields: [{ key: 'content', type: 'textarea', label: 'Overview Content' }, { key: 'image', type: 'image', label: 'Cover Image' }, { key: 'reasons', type: 'array', label: 'Reasons', fields: ['title', { key: 'description', type: 'textarea', label: 'Description' }, 'icon'] }] }]
           },
           {
-            id: 'best_practices', title: 'Best Practices', endpoint: 'aboutus', type: 'singleton', fields: [
+            id: 'best_practices', title: 'Best Practices', endpoint: 'aboutus', type: 'singleton', path: '/best-practices', fields: [
               { key: 'bestPracticesBanner', type: 'image', label: 'Banner Image' }, { key: 'bestPractices', type: 'array', label: 'Best Practices', fields: ['title', { key: 'content', type: 'textarea', label: 'Content' }, { key: 'image', type: 'image', label: 'Image' }] }]
           },
           {
-            id: 'green_initiatives', title: 'Green Initiatives', endpoint: 'aboutus', type: 'singleton', fields: [
+            id: 'green_initiatives', title: 'Green Initiatives', endpoint: 'aboutus', type: 'singleton', path: '/green-initiatives', fields: [
               { key: 'greenInitiatives', type: 'object', label: 'Green Initiatives', fields: [{ key: 'content', type: 'textarea', label: 'Overview Content' }, { key: 'image', type: 'image', label: 'Cover Image' }, { key: 'bannerImage', type: 'image', label: 'Banner Image' }, { key: 'images', type: 'array', label: 'Images', fields: [{ key: 'url', type: 'image', label: 'Image' }] }, { key: 'initiatives', type: 'array', label: 'Initiatives', fields: ['title', 'desc', 'stat', 'icon'] }] }]
           },
           {
-            id: 'faqs', title: 'FAQs', endpoint: 'faqs', type: 'collection', fields: [
+            id: 'faqs', title: 'FAQs', endpoint: 'faqs', type: 'collection', path: '/faqs', fields: [
               { key: 'question', type: 'text', label: 'Question' }, { key: 'answer', type: 'longtext', label: 'Answer' }]
           },
           {
-            id: 'mandatory_disclosure', title: 'Mandatory Disclosure', endpoint: 'mandatorydisclosure', type: 'singleton', fields: [
+            id: 'mandatory_disclosure', title: 'Mandatory Disclosure', endpoint: 'mandatorydisclosure', type: 'singleton', path: '/mandatory-disclosure', fields: [
               { key: 'title', type: 'text', label: 'Page Title' }, { key: 'subtitle', type: 'text', label: 'Page Subtitle' }, { key: 'bannerImage', type: 'image', label: 'Banner Image' }, { key: 'statement', type: 'longtext', label: 'PCI/BCI Compliance Statement' }, { key: 'disclosureItems', type: 'array', label: 'Disclosure Items', fields: ['category', { key: 'items', type: 'longtext', label: 'Items (newline separated)' }] }]
           },
           {
-            id: 'anti_ragging', title: 'Anti-Ragging', endpoint: 'mandatorydisclosure', type: 'singleton', fields: [
+            id: 'anti_ragging', title: 'Anti-Ragging', endpoint: 'mandatorydisclosure', type: 'singleton', path: '/anti-ragging', fields: [
               { key: 'antiRagging', type: 'object', label: 'Anti-Ragging Config', fields: [{ key: 'title', type: 'text', label: 'Page Title' }, { key: 'subtitle', type: 'text', label: 'Page Subtitle' }, { key: 'bannerImage', type: 'image', label: 'Banner Image' }, 'helpline', { key: 'content', type: 'textarea', label: 'Overview Content' }, { key: 'image', type: 'image', label: 'Cover Image' }, { key: 'committeeText', type: 'textarea', label: 'Committee Text' }, { key: 'reportMethods', type: 'array', label: 'Report Methods', fields: ['method'] }, { key: 'pledgeTitle', type: 'text', label: 'Pledge Title' }, { key: 'pledgeText', type: 'textarea', label: 'Pledge Text' }] }]
           },
           {
-            id: 'grievance_redressal', title: 'Grievance Redressal', endpoint: 'mandatorydisclosure', type: 'singleton', fields: [
+            id: 'grievance_redressal', title: 'Grievance Redressal', endpoint: 'mandatorydisclosure', type: 'singleton', path: '/grievance-redressal', fields: [
               { key: 'grievanceRedressal', type: 'object', label: 'Grievance Redressal Config', fields: [{ key: 'title', type: 'text', label: 'Page Title' }, { key: 'subtitle', type: 'text', label: 'Page Subtitle' }, { key: 'bannerImage', type: 'image', label: 'Banner Image' }, { key: 'content', type: 'textarea', label: 'Overview Content' }, { key: 'image', type: 'image', label: 'Cover Image' }, 'portalLink', { key: 'process', type: 'array', label: 'Redressal Process', fields: ['step', { key: 'description', type: 'textarea', label: 'Description' }] }] }]
           },
           {
-            id: 'code_of_conduct', title: 'Code of Conduct', endpoint: 'codeofconduct', type: 'singleton', fields: [
+            id: 'code_of_conduct', title: 'Code of Conduct', endpoint: 'codeofconduct', type: 'singleton', path: '/code-of-conduct', fields: [
               { key: 'title', type: 'text', label: 'Page Title' }, { key: 'subtitle', type: 'text', label: 'Page Subtitle' }, { key: 'bannerImage', type: 'image', label: 'Banner Image' }, { key: 'intro', type: 'longtext', label: 'Introductory Statement' }, { key: 'image', type: 'image', label: 'Cover Image' }, { key: 'rules', type: 'array', label: 'Rules Categories', fields: ['category', { key: 'items', type: 'longtext', label: 'Items (newline separated)' }] }]
           }
         ]
@@ -1409,31 +1420,31 @@ export const siteConfigs: Record<string, SiteConfig> = {
         title: 'Programs & Admissions',
         sections: [
           {
-            id: 'programs_overview', title: 'Programs Overview', endpoint: 'programsoverview', type: 'singleton', fields: [
+            id: 'programs_overview', title: 'Programs Overview', endpoint: 'programsoverview', type: 'singleton', path: '/education-overview', fields: [
               { key: 'content', type: 'longtext', label: 'Overview Content' }, { key: 'image', type: 'image', label: 'Cover Image' }, { key: 'bannerImage', type: 'image', label: 'Banner Image' }, { key: 'editorialPhotos', type: 'array', label: 'Editorial Photos', fields: [{ key: 'url', type: 'image', label: 'Image' }] }, { key: 'keyPoints', type: 'array', label: 'Key Points', fields: ['point'] }]
           },
           {
-            id: 'programs', title: 'Academic Programs', endpoint: 'programs', type: 'collection', fields: [
+            id: 'programs', title: 'Academic Programs', endpoint: 'programs', type: 'collection', path: '/courses', fields: [
               { key: 'name', type: 'text', label: 'Program Name' }, { key: 'slug', type: 'text', label: 'Slug (e.g. ba-llb)' }, { key: 'duration', type: 'text', label: 'Duration' }, { key: 'annualIntake', type: 'text', label: 'Annual Intake' }, { key: 'annualFee', type: 'text', label: 'Annual Fee' }, { key: 'eligibility', type: 'text', label: 'Eligibility' }, { key: 'image', type: 'image', label: 'Cover Image' }, { key: 'bannerImage', type: 'image', label: 'Banner Image' }, { key: 'studentActivityImages', type: 'array', label: 'Student Activity Photos', fields: [{ key: 'url', type: 'image', label: 'Image' }, { key: 'caption', type: 'text', label: 'Caption' }] }, { key: 'placementOutcomeImage', type: 'image', label: 'Placement Outcome Cover' }, { key: 'placementOutcomeImages', type: 'array', label: 'Placement Outcome Gallery/Carousel', fields: [{ key: 'url', type: 'image', label: 'Image' }, { key: 'caption', type: 'text', label: 'Caption' }] }, { key: 'facultyTeachingImage', type: 'image', label: 'Faculty Teaching Photo' }, { key: 'images', type: 'array', label: 'Campus Gallery Photos', fields: [{ key: 'url', type: 'image', label: 'Image' }, { key: 'caption', type: 'text', label: 'Caption' }] }, { key: 'overview', type: 'longtext', label: 'Overview' }, { key: 'curriculumStructure', type: 'longtext', label: 'Curriculum Structure' }, { key: 'careerScope', type: 'longtext', label: 'Career Scope' }]
           },
           {
-            id: 'certificate_overview', title: 'Certificate Overview', endpoint: 'certificateoverview', type: 'singleton', fields: [
+            id: 'certificate_overview', title: 'Certificate Overview', endpoint: 'certificateoverview', type: 'singleton', path: '/certificate-programs', fields: [
               { key: 'title', type: 'text', label: 'Page Title' }, { key: 'subtitle', type: 'text', label: 'Page Subtitle' }, { key: 'content', type: 'longtext', label: 'Introduction Content' }, { key: 'image', type: 'image', label: 'Cover Image' }, { key: 'bannerImage', type: 'image', label: 'Banner Image' }, { key: 'images', type: 'array', label: 'Gallery Photos', fields: [{ key: 'url', type: 'image', label: 'Image' }] }]
           },
           {
-            id: 'certificates', title: 'Certificate Programs', endpoint: 'certificates', type: 'collection', fields: [
+            id: 'certificates', title: 'Certificate Programs', endpoint: 'certificates', type: 'collection', path: '/certificate-programs', fields: [
               { key: 'name', type: 'text', label: 'Program Name' }, { key: 'duration', type: 'text', label: 'Duration' }, { key: 'fee', type: 'text', label: 'Fee' }, { key: 'eligibility', type: 'text', label: 'Eligibility' }, { key: 'desc', type: 'longtext', label: 'Description' }]
           },
           {
-            id: 'internship_externship', title: 'Internship & Externship', endpoint: 'internshipexternship', type: 'singleton', fields: [
+            id: 'internship_externship', title: 'Internship & Externship', endpoint: 'internshipexternship', type: 'singleton', path: '/pedagogy-labs', fields: [
               { key: 'title', type: 'text', label: 'Page Title' }, { key: 'subtitle', type: 'text', label: 'Page Subtitle' }, { key: 'overview', type: 'longtext', label: 'Overview Content' }, { key: 'image', type: 'image', label: 'Cover Image' }, { key: 'bannerImage', type: 'image', label: 'Banner Image' }, { key: 'images', type: 'array', label: 'Gallery Photos', fields: [{ key: 'url', type: 'image', label: 'Image' }] }, { key: 'opportunities', type: 'array', label: 'Opportunities', fields: ['title', { key: 'desc', type: 'longtext', label: 'Description' }] }]
           },
           {
-            id: 'admissions', title: 'Admissions & Scholarships', endpoint: 'admissions', type: 'singleton', fields: [
+            id: 'admissions', title: 'Admissions & Scholarships', endpoint: 'admissions', type: 'singleton', path: '/admissions', fields: [
               { key: 'howToApply', type: 'array', label: 'Admission Steps', fields: [{ key: 'num', type: 'text', label: 'Step Number' }, { key: 'title', type: 'text', label: 'Title' }, { key: 'desc', type: 'textarea', label: 'Description' }] }, { key: 'documents', type: 'array', label: 'Required Documents', fields: [{ key: 'docName', type: 'text', label: 'Document Name' }] }, { key: 'alertBanner', type: 'object', label: 'Alert Banner', fields: [{ key: 'title', type: 'text', label: 'Title' }, { key: 'content', type: 'textarea', label: 'Content' }, { key: 'isActive', type: 'boolean', label: 'Is Active?' }] }, { key: 'admissionContact', type: 'object', label: 'Admission Contact', fields: [{ key: 'phone', type: 'text', label: 'Phone' }, { key: 'email', type: 'text', label: 'Email' }] }, { key: 'scholarships', type: 'array', label: 'Scholarships', fields: [{ key: 'category', type: 'text', label: 'Category' }, { key: 'concession', type: 'text', label: 'Concession' }, { key: 'description', type: 'textarea', label: 'Description' }] }, { key: 'bannerImage', type: 'image', label: 'Admissions Banner' }, { key: 'orientationPhotos', type: 'array', label: 'Orientation Photos', fields: [{ key: 'url', type: 'image', label: 'Image' }, { key: 'caption', type: 'text', label: 'Caption' }] }, { key: 'scholarshipsBanner', type: 'image', label: 'Scholarships Cover Image' }, { key: 'scholarshipsHandoverPhotos', type: 'array', label: 'Scholarship Handover Photos', fields: [{ key: 'url', type: 'image', label: 'Image' }, { key: 'caption', type: 'text', label: 'Caption' }] }]
           },
           {
-            id: 'feepayment', title: 'Fee Payment', endpoint: 'feepayment', type: 'singleton', fields: [
+            id: 'feepayment', title: 'Fee Payment', endpoint: 'feepayment', type: 'singleton', path: '/fee-payment', fields: [
               { key: 'title', type: 'text', label: 'Page Title' }, { key: 'instructions', type: 'textarea', label: 'Instructions' }, { key: 'image', type: 'image', label: 'Cover Image' }, { key: 'link', type: 'text', label: 'Portal Link' }]
           }
         ]
@@ -1443,81 +1454,82 @@ export const siteConfigs: Record<string, SiteConfig> = {
         title: 'Faculty',
         sections: [
           {
-            id: 'faculty', title: 'Faculty Directory', endpoint: 'faculty', type: 'collection', fields: [
+            id: 'faculty', title: 'Faculty Directory', endpoint: 'faculty', type: 'collection', path: '/faculty', fields: [
               { key: 'name', type: 'text', label: 'Name' }, { key: 'designation', type: 'text', label: 'Designation' }, { key: 'qualification', type: 'text', label: 'Qualification' }, { key: 'specialisation', type: 'text', label: 'Specialization' }, { key: 'dept', type: 'text', label: 'Department' }, { key: 'bio', type: 'textarea', label: 'Bio' }, { key: 'publications', type: 'text', label: 'Publications count' }, { key: 'image', type: 'image', label: 'Photo' }]
           },
           {
-            id: 'visitingfaculty', title: 'Visiting Faculty', endpoint: 'visitingfaculty', type: 'collection', fields: [
+            id: 'visitingfaculty', title: 'Visiting Faculty', endpoint: 'visitingfaculty', type: 'collection', path: '/visiting-faculty', fields: [
               { key: 'name', type: 'text', label: 'Name' }, { key: 'org', type: 'text', label: 'Organization / Designation' }, { key: 'specialisation', type: 'text', label: 'Specialization' }, { key: 'impact', type: 'textarea', label: 'Impact' }, { key: 'bar', type: 'text', label: 'Extra Info / Tag' }, { key: 'image', type: 'image', label: 'Photo' }]
           }
         ]
       },
+      campusLifePage(),
       {
         id: 'labs_campus',
         title: 'Campus & Gallery',
         sections: [
           {
-            id: 'facilities', title: 'Facilities & Labs', endpoint: 'facilities', type: 'collection', fields: [
+            id: 'facilities', title: 'Facilities & Labs', endpoint: 'facilities', type: 'collection', path: '/infrastructure', fields: [
               { key: 'slug', type: 'text', label: 'Page URL Slug' }, { key: 'title', type: 'text', label: 'Page Title' }, { key: 'subtitle', type: 'textarea', label: 'Page Subtitle' }, { key: 'overviewHeading', type: 'text', label: 'Overview Heading' }, { key: 'overviewContent', type: 'textarea', label: 'Overview Content' }, { key: 'image', type: 'image', label: 'Cover Image' }, { key: 'bannerImage', type: 'image', label: 'Banner Image' }, { key: 'editorialPhotos', type: 'array', label: 'Editorial Photos', fields: [{ key: 'url', type: 'image', label: 'Image' }] }, { key: 'images', type: 'array', label: 'Gallery Images', fields: [{ key: 'url', type: 'image', label: 'Image' }, { key: 'caption', type: 'text', label: 'Caption' }] }, { key: 'highlights', type: 'array', label: 'Highlights / Equipment', fields: ['title', 'description'] }]
           },
           {
-            id: 'photos', title: 'Photo Gallery', endpoint: 'photos', type: 'collection', fields: [
+            id: 'photos', title: 'Photo Gallery', endpoint: 'photos', type: 'collection', path: '/photo-gallery', fields: [
               { key: 'title', type: 'text', label: 'Image Title / Caption' }, { key: 'category', type: 'text', label: 'Category' }, { key: 'url', type: 'image', label: 'Upload Image' }]
           },
           {
-            id: 'videos', title: 'Video Gallery', endpoint: 'videos', type: 'collection', fields: [
+            id: 'videos', title: 'Video Gallery', endpoint: 'videos', type: 'collection', path: '/video-gallery', fields: [
               { key: 'title', type: 'text', label: 'Video Title' }, { key: 'category', type: 'text', label: 'Category' }, { key: 'url', type: 'text', label: 'YouTube URL' }]
           },
           {
-            id: 'press', title: 'Press Coverage', endpoint: 'press', type: 'collection', fields: [
+            id: 'press', title: 'Press Coverage', endpoint: 'press', type: 'collection', path: '/press-coverage', fields: [
               { key: 'title', type: 'text', label: 'Headline / Title' }, { key: 'publication', type: 'text', label: 'Publication Name' }, { key: 'date', type: 'text', label: 'Date' }, { key: 'link', type: 'text', label: 'Article Link' }, { key: 'image', type: 'image', label: 'Cover Image' }]
           }
         ]
       },
       {
         id: 'clinical_training',
-        title: 'Clinical Training',
+        title: 'Academics & Labs',
         sections: [
           {
-            id: 'mootcourt', title: 'Moot Court Sessions', endpoint: 'mootcourt', type: 'singleton', fields: [
+            id: 'mootcourt', title: 'Moot Court Sessions', endpoint: 'mootcourt', type: 'singleton', path: '/pedagogy-labs', fields: [
               { key: 'title', type: 'text', label: 'Page Title' }, { key: 'subtitle', type: 'text', label: 'Page Subtitle' }, { key: 'content', type: 'longtext', label: 'Overview Content' }, { key: 'image', type: 'image', label: 'Cover Image' }, { key: 'bannerImage', type: 'image', label: 'Banner Image' }, { key: 'images', type: 'array', label: 'Photo Gallery', fields: [{ key: 'url', type: 'image', label: 'Image' }, { key: 'caption', type: 'text', label: 'Caption' }] }, { key: 'items', type: 'array', label: 'Features', fields: ['title', { key: 'desc', type: 'longtext', label: 'Description' }, 'icon'] }]
           },
           {
-            id: 'legalaidcell', title: 'Legal Aid Cell', endpoint: 'legalaidcell', type: 'singleton', fields: [
+            id: 'legalaidcell', title: 'Legal Aid & E-Cell', endpoint: 'legalaidcell', type: 'singleton', path: '/e-cell', fields: [
               { key: 'title', type: 'text', label: 'Page Title' }, { key: 'subtitle', type: 'text', label: 'Page Subtitle' }, { key: 'content', type: 'longtext', label: 'Overview Content' }, { key: 'image', type: 'image', label: 'Cover Image' }, { key: 'bannerImage', type: 'image', label: 'Banner Image' }, { key: 'images', type: 'array', label: 'Photo Gallery', fields: [{ key: 'url', type: 'image', label: 'Image' }, { key: 'caption', type: 'text', label: 'Caption' }] }, { key: 'items', type: 'array', label: 'Objectives', fields: ['title', { key: 'desc', type: 'longtext', label: 'Description' }, 'icon'] }]
           },
           {
-            id: 'courtjailvisits', title: 'Court & Jail Visits', endpoint: 'industrialvisits', type: 'collection', fields: [
-              { key: 'company', type: 'text', label: 'Court / Jail Name' }, { key: 'location', type: 'text', label: 'Location' }, { key: 'date', type: 'text', label: 'Date' }, { key: 'description', type: 'longtext', label: 'Description' }, { key: 'takeaways', type: 'longtext', label: 'Key Takeaways' }]
+            id: 'courtjailvisits', title: 'Court & Industrial Visits', endpoint: 'industrialvisits', type: 'collection', path: '/industrial-visits', fields: [
+              { key: 'company', type: 'text', label: 'Court / Industry Name' }, { key: 'location', type: 'text', label: 'Location' }, { key: 'date', type: 'text', label: 'Date' }, { key: 'description', type: 'longtext', label: 'Description' }, { key: 'takeaways', type: 'longtext', label: 'Key Takeaways' }]
           },
           {
-            id: 'skilldevelopment', title: 'Skill Development', endpoint: 'skilldevelopment', type: 'singleton', fields: [
+            id: 'skilldevelopment', title: 'Skill Development Cell', endpoint: 'skilldevelopment', type: 'singleton', path: '/skill-development', fields: [
               { key: 'title', type: 'text', label: 'Page Title' }, { key: 'subtitle', type: 'text', label: 'Page Subtitle' }, { key: 'content', type: 'longtext', label: 'Overview Content' }, { key: 'image', type: 'image', label: 'Cover Image' }, { key: 'bannerImage', type: 'image', label: 'Banner Image' }, { key: 'images', type: 'array', label: 'Photo Gallery', fields: [{ key: 'url', type: 'image', label: 'Image' }, { key: 'caption', type: 'text', label: 'Caption' }] }, { key: 'items', type: 'array', label: 'Activities', fields: ['title', { key: 'desc', type: 'longtext', label: 'Description' }, 'icon'] }]
           }
         ]
       },
       {
         id: 'events_activities',
-        title: 'Events',
+        title: 'Events & Guest Lectures',
         sections: [
           {
-            id: 'news', title: 'News & Events', endpoint: 'news', type: 'collection', fields: [
+            id: 'news', title: 'News & Events', endpoint: 'news', type: 'collection', path: '/news-events', fields: [
               { key: 'image', type: 'image', label: 'Cover' }, 'title', 'date', 'category', { key: 'description', type: 'textarea', label: 'Description' }, 'link']
           },
           {
-            id: 'debatesgd', title: 'Debates & GD', endpoint: 'debatesgd', type: 'singleton', fields: [
+            id: 'debatesgd', title: 'Debates & GD', endpoint: 'debatesgd', type: 'singleton', path: '/debates-gd', fields: [
               { key: 'title', type: 'text', label: 'Page Title' }, { key: 'subtitle', type: 'text', label: 'Page Subtitle' }, { key: 'content', type: 'longtext', label: 'Overview Content' }, { key: 'image', type: 'image', label: 'Cover Image' }, { key: 'bannerImage', type: 'image', label: 'Banner Image' }, { key: 'images', type: 'array', label: 'Photo Gallery', fields: [{ key: 'url', type: 'image', label: 'Image' }, { key: 'caption', type: 'text', label: 'Caption' }] }, { key: 'items', type: 'array', label: 'Activities', fields: ['title', { key: 'desc', type: 'longtext', label: 'Description' }, 'icon'] }]
           },
           {
-            id: 'culturalactivities', title: 'Cultural Activities', endpoint: 'culturalactivities', type: 'singleton', fields: [
+            id: 'culturalactivities', title: 'Cultural Activities', endpoint: 'culturalactivities', type: 'singleton', path: '/cultural-activities', fields: [
               { key: 'title', type: 'text', label: 'Page Title' }, { key: 'subtitle', type: 'text', label: 'Page Subtitle' }, { key: 'content', type: 'longtext', label: 'Overview Content' }, { key: 'image', type: 'image', label: 'Cover Image' }, { key: 'bannerImage', type: 'image', label: 'Banner Image' }, { key: 'images', type: 'array', label: 'Photo Gallery', fields: [{ key: 'url', type: 'image', label: 'Image' }, { key: 'caption', type: 'text', label: 'Caption' }] }, { key: 'items', type: 'array', label: 'Events', fields: ['title', { key: 'desc', type: 'longtext', label: 'Description' }, 'icon'] }]
           },
           {
-            id: 'guestlecturespage', title: 'Guest Lectures Page Header', endpoint: 'guestlecturespage', type: 'singleton', fields: [
+            id: 'guestlecturespage', title: 'Guest Lectures Page Header', endpoint: 'guestlecturespage', type: 'singleton', path: '/guest-lectures', fields: [
               { key: 'title', type: 'text', label: 'Page Title' }, { key: 'subtitle', type: 'text', label: 'Page Subtitle' }, { key: 'overview', type: 'longtext', label: 'Overview Content' }, { key: 'image', type: 'image', label: 'Cover Image' }, { key: 'bannerImage', type: 'image', label: 'Banner Image' }]
           },
           {
-            id: 'guestlectures', title: 'Guest Lectures (Individual Cards)', endpoint: 'guestlectures', type: 'collection', fields: [
+            id: 'guestlectures', title: 'Guest Lectures (Individual Cards)', endpoint: 'guestlectures', type: 'collection', path: '/guest-lectures', fields: [
               { key: 'title', type: 'text', label: 'Lecture Title' }, { key: 'speaker', type: 'text', label: 'Speaker Name' }, { key: 'designation', type: 'text', label: 'Designation / Organization' }, { key: 'date', type: 'text', label: 'Date' }, { key: 'image', type: 'image', label: 'Image' }, { key: 'description', type: 'longtext', label: 'Description' }, { key: 'topics', type: 'text', label: 'Topics Covered' }]
           }
         ]
@@ -1528,37 +1540,37 @@ export const siteConfigs: Record<string, SiteConfig> = {
         sections: [
           // Academic Hub
           {
-            id: 'downloads', title: 'Downloads', endpoint: 'downloads', type: 'singleton', fields: [
+            id: 'downloads', title: 'Downloads', endpoint: 'downloads', type: 'singleton', path: '/downloads', fields: [
               { key: 'title', type: 'text', label: 'Title' }, { key: 'subtitle', type: 'text', label: 'Subtitle' }, { key: 'overview', type: 'textarea', label: 'Overview' }, { key: 'image', type: 'image', label: 'Cover Image' }, { key: 'files', type: 'array', label: 'Files', fields: ['name', 'fileType', 'category', 'size', { key: 'url', type: 'file', label: 'Upload PDF' }] }]
           },
           {
-            id: 'pastpapers', title: 'Past Exam Papers', endpoint: 'pastpapers', type: 'singleton', fields: [
+            id: 'pastpapers', title: 'Past Exam Papers', endpoint: 'pastpapers', type: 'singleton', path: '/past-papers', fields: [
               { key: 'title', type: 'text', label: 'Title' }, { key: 'subtitle', type: 'text', label: 'Subtitle' }, { key: 'overview', type: 'textarea', label: 'Overview' }, { key: 'image', type: 'image', label: 'Cover Image' }, { key: 'files', type: 'array', label: 'Files', fields: ['name', 'fileType', 'category', 'size', { key: 'url', type: 'file', label: 'Upload PDF' }] }]
           },
           {
-            id: 'codeofconduct', title: 'Code of Conduct', endpoint: 'codeofconduct', type: 'singleton', fields: [
+            id: 'codeofconduct', title: 'Code of Conduct', endpoint: 'codeofconduct', type: 'singleton', path: '/code-of-conduct', fields: [
               { key: 'title', type: 'text', label: 'Page Title' }, { key: 'subtitle', type: 'text', label: 'Page Subtitle' }, { key: 'content', type: 'longtext', label: 'Content' }, { key: 'image', type: 'image', label: 'Cover Image' }]
           },
           {
-            id: 'studentportal', title: 'Student Portal', endpoint: 'studentportal', type: 'singleton', fields: [
+            id: 'studentportal', title: 'Student Portal', endpoint: 'studentportal', type: 'singleton', path: '/student-portal', fields: [
               { key: 'title', type: 'text', label: 'Title' }, { key: 'instructions', type: 'textarea', label: 'Instructions' }, { key: 'link', type: 'text', label: 'Portal Link' }, { key: 'image', type: 'image', label: 'Cover Image' }]
           },
 
           // Career & Research
           {
-            id: 'placements', title: 'Placements', endpoint: 'placements', type: 'singleton', fields: [
+            id: 'placements', title: 'Placements', endpoint: 'placements', type: 'singleton', path: '/placements', fields: [
               { key: 'placementNumbers', type: 'array', label: 'Placement Numbers', fields: ['value', 'label'] }, { key: 'recruitingPartners', type: 'array', label: 'Recruiting Partners', fields: ['name', { key: 'logo', type: 'image', label: 'Logo' }] }, { key: 'placementCeremonyImages', type: 'array', label: 'Placement Ceremony Photos', fields: [{ key: 'url', type: 'image', label: 'Image' }, { key: 'caption', type: 'text', label: 'Caption' }] }, { key: 'statsInfographic', type: 'image', label: 'Stats Infographic' }, { key: 'successStories', type: 'array', label: 'Success Stories', fields: ['name', 'company', 'role', 'batch', { key: 'image', type: 'image', label: 'Image' }] }, { key: 'placementProcess', type: 'array', label: 'Placement Process', fields: ['step', 'title', 'desc'] }]
           },
           {
-            id: 'researchjournal', title: 'Research Journal', endpoint: 'researchjournal', type: 'singleton', fields: [
+            id: 'researchjournal', title: 'Research Journal', endpoint: 'researchjournal', type: 'singleton', path: '/research-journal', fields: [
               { key: 'title', type: 'text', label: 'Title' }, { key: 'subtitle', type: 'text', label: 'Subtitle' }, { key: 'content', type: 'longtext', label: 'Overview Content' }, { key: 'image', type: 'image', label: 'Cover Image' }, { key: 'bannerImage', type: 'image', label: 'Banner Image' }, { key: 'editorialBoardPhotos', type: 'array', label: 'Editorial Board Photos', fields: [{ key: 'url', type: 'image', label: 'Image' }, { key: 'caption', type: 'text', label: 'Caption' }] }, { key: 'stats', type: 'array', label: 'Journal Stats', fields: ['label', 'value'] }, { key: 'guidelinesLink', type: 'text', label: 'Guidelines Link' }]
           },
           {
-            id: 'publications', title: 'Publications', endpoint: 'publications', type: 'collection', fields: [
+            id: 'publications', title: 'Publications', endpoint: 'publications', type: 'collection', path: '/research-journal', fields: [
               { key: 'title', type: 'text', label: 'Title' }, { key: 'authors', type: 'text', label: 'Authors' }, { key: 'journal', type: 'text', label: 'Journal / Publisher' }, { key: 'year', type: 'text', label: 'Year' }, { key: 'impactFactor', type: 'text', label: 'Impact Factor' }, { key: 'link', type: 'text', label: 'Link' }]
           },
           {
-            id: 'alumninetwork', title: 'Alumni Network', endpoint: 'alumninetwork', type: 'collection', fields: [
+            id: 'alumninetwork', title: 'Alumni Network', endpoint: 'alumninetwork', type: 'collection', path: '/e-cell', fields: [
               { key: 'name', type: 'text', label: 'Name' }, { key: 'batch', type: 'text', label: 'Batch' }, { key: 'role', type: 'text', label: 'Current Role' }, { key: 'company', type: 'text', label: 'Company' }, { key: 'message', type: 'textarea', label: 'Quote' }, { key: 'image', type: 'image', label: 'Photo' }]
           }
         ]
@@ -1568,31 +1580,31 @@ export const siteConfigs: Record<string, SiteConfig> = {
         title: 'Connect & Reach',
         sections: [
           {
-            id: 'research', title: 'Research Projects', endpoint: 'researchprojects', type: 'collection', fields: [
+            id: 'research', title: 'Research Projects', endpoint: 'researchprojects', type: 'collection', path: '/research-journal', fields: [
               { key: 'title', type: 'text', label: 'Project Title' }, { key: 'investigator', type: 'text', label: 'Principal Investigator' }, { key: 'fundingAgency', type: 'text', label: 'Funding Agency' }, { key: 'grantAmount', type: 'text', label: 'Grant Amount' }, { key: 'status', type: 'text', label: 'Status' }, { key: 'duration', type: 'text', label: 'Duration' }]
           },
           {
-            id: 'careerspage', title: 'Careers Page Header', endpoint: 'careerspage', type: 'singleton', fields: [
+            id: 'careerspage', title: 'Careers Page Header', endpoint: 'careerspage', type: 'singleton', path: '/careers', fields: [
               { key: 'title', type: 'text', label: 'Page Title' }, { key: 'subtitle', type: 'text', label: 'Page Subtitle' }, { key: 'overview', type: 'textarea', label: 'Overview Content' }, { key: 'image', type: 'image', label: 'Cover Image' }]
           },
           {
-            id: 'careers', title: 'Careers (Openings)', endpoint: 'careers', type: 'collection', fields: [
+            id: 'careers', title: 'Careers (Openings)', endpoint: 'careers', type: 'collection', path: '/careers', fields: [
               { key: 'title', type: 'text', label: 'Job Title' }, { key: 'department', type: 'text', label: 'Department' }, { key: 'type', type: 'text', label: 'Employment Type' }, { key: 'location', type: 'text', label: 'Location' }, { key: 'description', type: 'textarea', label: 'Job Description' }, { key: 'requirements', type: 'textarea', label: 'Requirements' }, { key: 'status', type: 'text', label: 'Status' }]
           },
           {
-            id: 'contact', title: 'Contact Us', endpoint: 'contact', type: 'singleton', fields: [
+            id: 'contact', title: 'Contact Us', endpoint: 'contact', type: 'singleton', path: '/contact', fields: [
               { key: 'title', type: 'text', label: 'Page Title' }, { key: 'subtitle', type: 'text', label: 'Page Subtitle' }, { key: 'overview', type: 'textarea', label: 'Overview Content' }, { key: 'image', type: 'image', label: 'Cover Image' }, { key: 'bannerImage', type: 'image', label: 'Banner Image' }, { key: 'address', type: 'text', label: 'Address' }, { key: 'phone', type: 'text', label: 'Phone Number' }, { key: 'email', type: 'text', label: 'Email' }, { key: 'mapEmbed', type: 'text', label: 'Map Embed URL (iframe src)' }]
           },
           {
-            id: 'feedbackpage', title: 'Feedback Page Header', endpoint: 'feedbackpage', type: 'singleton', fields: [
+            id: 'feedbackpage', title: 'Feedback Page Header', endpoint: 'feedbackpage', type: 'singleton', path: '/feedback', fields: [
               { key: 'title', type: 'text', label: 'Page Title' }, { key: 'subtitle', type: 'text', label: 'Page Subtitle' }, { key: 'overview', type: 'textarea', label: 'Overview Content' }, { key: 'image', type: 'image', label: 'Cover Image' }]
           },
           {
-            id: 'feedback', title: 'Feedback Submissions', endpoint: 'feedback', type: 'collection', fields: [
+            id: 'feedback', title: 'Feedback Submissions', endpoint: 'feedback', type: 'collection', path: '/feedback', fields: [
               { key: 'name', type: 'text', label: 'Name' }, { key: 'userType', type: 'text', label: 'User Type / Role' }, { key: 'programme', type: 'text', label: 'Programme' }, { key: 'subject', type: 'text', label: 'Subject' }, { key: 'message', type: 'textarea', label: 'Message' }, { key: 'rating', type: 'number', label: 'Rating' }]
           },
           {
-            id: 'leads', title: 'Admission Leads', endpoint: 'leads', type: 'collection', fields: [
+            id: 'leads', title: 'Admission Leads', endpoint: 'leads', type: 'collection', path: '/admissions-enquiry', fields: [
               { key: 'name', type: 'text', label: 'Name' },
               { key: 'email', type: 'text', label: 'Email' },
               { key: 'phone', type: 'text', label: 'Phone' },
@@ -1610,6 +1622,11 @@ export const siteConfigs: Record<string, SiteConfig> = {
     name: "Pharmacy",
     baseUrl: "pharmacy",
     pages: [
+      {
+        id: 'page_layout',
+        title: '📐 Section Movement & Layout',
+        sections: []
+      },
       {
         id: 'url_based_galleries',
         title: 'URL-Based Galleries',
@@ -1989,6 +2006,11 @@ export const siteConfigs: Record<string, SiteConfig> = {
     baseUrl: "landing1",
     pages: [
       {
+        id: 'page_layout',
+        title: '📐 Section Movement & Layout',
+        sections: []
+      },
+      {
         id: 'url_based_galleries',
         title: 'URL-Based Galleries',
         sections: [
@@ -2166,6 +2188,11 @@ export const siteConfigs: Record<string, SiteConfig> = {
     name: "Landing Page 2",
     baseUrl: "landing2",
     pages: [
+      {
+        id: 'page_layout',
+        title: '📐 Section Movement & Layout',
+        sections: []
+      },
       {
         id: 'url_based_galleries',
         title: 'URL-Based Galleries',
@@ -2370,6 +2397,11 @@ export const siteConfigs: Record<string, SiteConfig> = {
     name: "Ishan Ayurvedic College",
     baseUrl: "ayurveda",
     pages: [
+      {
+        id: 'page_layout',
+        title: '📐 Section Movement & Layout',
+        sections: []
+      },
       {
         id: 'url_based_galleries',
         title: 'URL-Based Galleries',

@@ -16,6 +16,7 @@ import Login from './components/Login';
 import AllLeads from './components/AllLeads';
 import RoleManagement from './components/RoleManagement';
 import DynamicPagesManager from './components/DynamicPagesManager';
+import PageLayoutManager from './components/PageLayoutManager';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import api from './api';
 
@@ -130,6 +131,7 @@ const AppContent = () => {
   const [selectedSite, setSelectedSite] = useState<string>('overview');
   const [selectedPage, setSelectedPage] = useState<string>('');
   const [selectedSection, setSelectedSection] = useState<string>('');
+  const [adminMode, setAdminMode] = useState<'editor' | 'layout'>('editor');
   
   const [dynamicConfigs, setDynamicConfigs] = useState<any>(siteConfigs);
   const [fetchingConfigs, setFetchingConfigs] = useState(true);
@@ -263,7 +265,10 @@ const AppContent = () => {
         selectedPage={selectedPage}
         onSelectPage={handleSelectPage}
         selectedSection={selectedSection}
-        onSelectSection={setSelectedSection}
+        onSelectSection={(secId) => {
+          setSelectedSection(secId);
+          setAdminMode('editor');
+        }}
       />
 
       {/* Main Content */}
@@ -284,11 +289,51 @@ const AppContent = () => {
               {selectedSite === 'overview' ? 'Dashboard' :
                 selectedSite === 'all_leads' ? 'Consolidated Enquiries' :
                   selectedSite === 'roles' ? 'Role Management' :
+                    (adminMode === 'layout' || selectedPage === 'page_layout') ? 'Section Movement & Layout' :
                     (currentSectionConfig?.title || 'Editor')}
             </div>
           </div>
 
           <div className="flex items-center gap-6">
+            {/* Mode Switcher for Sites */}
+            {selectedSite !== 'overview' && selectedSite !== 'all_leads' && selectedSite !== 'roles' && (
+              <div className="flex bg-slate-100 p-1 rounded-2xl border border-slate-200">
+                <button
+                  onClick={() => {
+                    setAdminMode('editor');
+                    if (selectedPage === 'page_layout') {
+                      const siteCfg = dynamicConfigs[selectedSite];
+                      const firstNormalPage = siteCfg?.pages?.find(
+                        (p: any) => p.id !== 'page_layout' && p.id !== 'dynamic_pages' && p.sections?.length > 0
+                      );
+                      if (firstNormalPage) {
+                        setSelectedPage(firstNormalPage.id);
+                        setSelectedSection(firstNormalPage.sections[0]?.id || '');
+                      }
+                    }
+                  }}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                    adminMode === 'editor' && selectedPage !== 'page_layout'
+                      ? 'bg-white text-slate-900 shadow-sm'
+                      : 'text-slate-500 hover:text-slate-900'
+                  }`}
+                >
+                  Fields Editor
+                </button>
+                <button
+                  onClick={() => setAdminMode('layout')}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                    adminMode === 'layout' || selectedPage === 'page_layout'
+                      ? 'bg-emerald-600 text-white shadow-sm'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  Section Movement & Layout
+                </button>
+              </div>
+            )}
+
             <div className="relative w-72 group hidden xl:block">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               <input
@@ -327,6 +372,11 @@ const AppContent = () => {
             <AllLeads />
           ) : selectedSite === 'roles' ? (
             <RoleManagement />
+          ) : (adminMode === 'layout' || selectedPage === 'page_layout') ? (
+            <PageLayoutManager
+              siteKey={selectedSite}
+              initialPageId={selectedPage === 'page_layout' ? 'homepage' : (selectedPage || 'homepage')}
+            />
           ) : selectedPage === 'dynamic_pages' ? (
             <DynamicPagesManager siteKey={selectedSite} />
           ) : currentSectionConfig ? (
@@ -341,9 +391,10 @@ const AppContent = () => {
               onRefreshConfigs={loadDynamicData}
             />
           ) : (
-            <div className="h-[60vh] flex items-center justify-center text-slate-400 italic">
-              Select a section from the sidebar to start editing.
-            </div>
+            <PageLayoutManager
+              siteKey={selectedSite}
+              initialPageId="homepage"
+            />
           )}
         </div>
       </main>

@@ -14,10 +14,13 @@
 const env = import.meta.env as Record<string, string | undefined>;
 
 const DEFAULTS: Record<string, string> = {
-  // Only origins evidenced in the codebase are defaulted here.
   legal: 'https://law.ishan.ac',
   pharmacy: 'https://pharmacy.ishan.ac',
   hospital: 'https://hospital.ishan.ac',
+  ayurveda: 'https://ayurveda.ishan.ac',
+  iimt: 'https://iimt.ishan.ac',
+  landing1: 'https://ishan.ac',
+  landing2: 'https://ishan-landing-page-1-branch2.vercel.app',
 };
 
 export function siteUrlFor(siteKey: string): string | null {
