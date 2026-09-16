@@ -35,7 +35,13 @@ export default function DynamicPagesManager({ siteKey }: { siteKey: string }) {
       setLoading(true);
       const res = await fetch(`${API_BASE}/dynamic-pages`);
       const data = await res.json();
-      setPages(data.filter((p: DynamicPage) => p.portal === siteKey));
+      const isMatchingPortal = (pPortal: string, targetSite: string) => {
+        if (targetSite === 'legal' || targetSite === 'law') return pPortal === 'legal' || pPortal === 'law';
+        if (targetSite === 'landing1' || targetSite === 'landingPage1') return pPortal === 'landing1' || pPortal === 'landingPage1';
+        if (targetSite === 'landing2' || targetSite === 'landingPage2') return pPortal === 'landing2' || pPortal === 'landingPage2';
+        return pPortal === targetSite;
+      };
+      setPages(data.filter((p: DynamicPage) => isMatchingPortal(p.portal, siteKey)));
     } catch (err) {
       console.error(err);
     } finally {
