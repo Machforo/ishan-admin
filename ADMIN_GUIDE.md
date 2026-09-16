@@ -26,15 +26,15 @@ The Ishan Admin Panel is a configuration-driven content management system (CMS) 
 The Ishan Admin Panel manages a network of 7 websites using a unified API backend. Content changes published in this dashboard update the live websites instantly.
 
 ### Managed Portals & Site Keys
-| Site Key | Portal Name | Primary Focus |
-| :--- | :--- | :--- |
-| `landing1` | **Ishan Group Main Landing** | Group-level home page, common facilities, and general news. |
-| `landing2` | **Admissions Landing Page** | Optimized landing pages for admissions campaigns and lead capture. |
-| `iimt` | **IIMT Portal** | Ishan Institute of Management & Technology (BBA, BCA, B.Com, etc.). |
-| `ayurveda` | **Ishan Ayurvedic College** | BAMS programme, herbal garden registry, academic calendar, and faculty. |
-| `hospital` | **Teaching Hospital** | OPD departments, Panchkarma treatments, bed availability, and hospital specs. |
-| `legal` | **Ishan Legal Portal** | Law school admissions, legal courses, academic resources, and milestones. |
-| `pharmacy` | **Ishan Pharmacy College** | Pharmacy school course directory, laboratories, and placements. |
+| Site Key | Portal Name | Live Website URL | Primary Focus |
+| :--- | :--- | :--- | :--- |
+| `landing1` | **Ishan Group Main Landing** | [landingpage1.ishaninstitute.edu.in](https://landingpage1.ishaninstitute.edu.in/) | Group-level home page, common facilities, and general news. |
+| `landing2` | **Admissions Landing Page** | [landingpage2.ishaninstitute.edu.in](https://landingpage2.ishaninstitute.edu.in/) | Optimized landing pages for admissions campaigns and lead capture. |
+| `iimt` | **IIMT Portal** | [iimt.ishaninstitute.edu.in](https://iimt.ishaninstitute.edu.in) | Ishan Institute of Management & Technology (BBA, BCA, B.Com, etc.). |
+| `ayurveda` | **Ishan Ayurvedic College** | [ayurveda.ishaninstitute.edu.in](https://ayurveda.ishaninstitute.edu.in/) | BAMS programme, herbal garden registry, academic calendar, and faculty. |
+| `hospital` | **Teaching Hospital** | [hospital.ishaninstitute.edu.in](https://hospital.ishaninstitute.edu.in) | OPD departments, Panchkarma treatments, bed availability, and hospital specs. |
+| `legal` | **Ishan Legal Portal** | [law.ishaninstitute.edu.in](https://law.ishaninstitute.edu.in) | Law school admissions, legal courses, academic resources, and milestones. |
+| `pharmacy` | **Ishan Pharmacy College** | [pharmacy.ishaninstitute.edu.in](https://pharmacy.ishaninstitute.edu.in/) | Pharmacy school course directory, laboratories, and placements. |
 
 ---
 
