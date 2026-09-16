@@ -16,7 +16,9 @@ import {
   HelpCircle,
   Maximize2,
   Search,
-  RotateCcw
+  RotateCcw,
+  Pencil,
+  Image
 } from 'lucide-react';
 import { livePageUrl } from '../config/siteUrls';
 import api from '../api';
@@ -24,7 +26,7 @@ import api from '../api';
 interface SectionItem {
   id: string;
   name: string;
-  type: 'builtin' | 'custom_html' | 'hero' | 'split' | 'cards' | 'cta' | 'faq';
+  type: 'builtin' | 'custom_html' | 'hero' | 'split' | 'cards' | 'cta' | 'faq' | 'gallery';
   order: number;
   isHidden: boolean;
   heading?: string;
@@ -367,6 +369,12 @@ const TEMPLATE_OPTIONS = [
     name: 'FAQ Accordion',
     description: 'List of frequently asked questions with collapsible answers',
     icon: HelpCircle
+  },
+  {
+    type: 'gallery',
+    name: 'Photo / Media Gallery',
+    description: 'Photo gallery grid with responsive image cards and lightbox preview',
+    icon: Image
   }
 ];
 
@@ -400,6 +408,9 @@ export default function PageLayoutManager({
   const [newSectionImage, setNewSectionImage] = useState<string>('');
   const [newSectionCtaText, setNewSectionCtaText] = useState<string>('');
   const [newSectionCtaLink, setNewSectionCtaLink] = useState<string>('/appointment');
+
+  // Edit Section Modal state
+  const [editingSection, setEditingSection] = useState<SectionItem | null>(null);
 
   // Load layout for selected page
   const fetchLayout = async (pageId: string) => {
@@ -486,6 +497,21 @@ export default function PageLayoutManager({
     });
     setSections(filtered);
     setHasChanges(true);
+  };
+
+  const handleSaveEditedSection = () => {
+    if (!editingSection) return;
+    if (!editingSection.name?.trim()) {
+      alert('Section name cannot be empty');
+      return;
+    }
+    setSections((prev) =>
+      prev.map((s) => (s.id === editingSection.id ? { ...editingSection } : s))
+    );
+    setHasChanges(true);
+    setStatus({ type: 'success', message: `Updated "${editingSection.name}"! Click Save & Publish to publish.` });
+    setTimeout(() => setStatus(null), 3500);
+    setEditingSection(null);
   };
 
   // Add Section Submit
@@ -937,6 +963,17 @@ export default function PageLayoutManager({
                       {sec.isHidden ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
 
+                    {/* Edit (for custom sections) */}
+                    {sec.type !== 'builtin' && (
+                      <button
+                        onClick={() => setEditingSection({ ...sec })}
+                        title="Edit Section Content & HTML"
+                        className="p-2 text-emerald-600 hover:bg-emerald-50 rounded-xl transition"
+                      >
+                        <Pencil className="w-4 h-4" />
+                      </button>
+                    )}
+
                     {/* Delete (only for custom sections) */}
                     {sec.type !== 'builtin' && (
                       <button
@@ -1138,6 +1175,141 @@ export default function PageLayoutManager({
                 className="px-6 py-2.5 text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl transition shadow-md shadow-emerald-200"
               >
                 Add Section to Page
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Section Modal */}
+      {editingSection && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-slate-200 p-6 sm:p-8 space-y-6">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+              <div>
+                <h2 className="text-xl font-bold text-slate-900">Edit Section: {editingSection.name}</h2>
+                <p className="text-slate-500 text-xs mt-0.5">
+                  Update content, headlines, and custom HTML for this section.
+                </p>
+              </div>
+              <button
+                onClick={() => setEditingSection(null)}
+                className="text-slate-400 hover:text-slate-600 font-bold p-1 text-lg"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">
+                  Section Name / Label <span className="text-rose-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={editingSection.name}
+                  onChange={(e) => setEditingSection({ ...editingSection, name: e.target.value })}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-800 focus:bg-white focus:ring-2 focus:ring-emerald-500 outline-none font-medium"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Heading (Optional)</label>
+                  <input
+                    type="text"
+                    value={editingSection.heading || ''}
+                    onChange={(e) => setEditingSection({ ...editingSection, heading: e.target.value })}
+                    placeholder="Main Section Heading"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-800 focus:bg-white focus:ring-2 focus:ring-emerald-500 outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Subheading / Badge</label>
+                  <input
+                    type="text"
+                    value={editingSection.subheading || ''}
+                    onChange={(e) => setEditingSection({ ...editingSection, subheading: e.target.value })}
+                    placeholder="Small badge above heading"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-800 focus:bg-white focus:ring-2 focus:ring-emerald-500 outline-none"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Description / Summary</label>
+                <textarea
+                  rows={2}
+                  value={editingSection.description || ''}
+                  onChange={(e) => setEditingSection({ ...editingSection, description: e.target.value })}
+                  placeholder="Introductory text or description..."
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-800 focus:bg-white focus:ring-2 focus:ring-emerald-500 outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Banner / Image URL (Hero, Split, or Gallery)</label>
+                <input
+                  type="text"
+                  value={editingSection.image || ''}
+                  onChange={(e) => setEditingSection({ ...editingSection, image: e.target.value })}
+                  placeholder="https://images.unsplash.com/..."
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-800 focus:bg-white focus:ring-2 focus:ring-emerald-500 outline-none font-mono"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">
+                  HTML Content (Tailwind / Custom Section Code)
+                </label>
+                <textarea
+                  rows={8}
+                  value={editingSection.htmlContent || ''}
+                  onChange={(e) => setEditingSection({ ...editingSection, htmlContent: e.target.value })}
+                  placeholder="<section class='...'>...</section>"
+                  className="w-full font-mono bg-slate-950 text-emerald-400 border border-slate-800 rounded-xl p-3.5 text-xs focus:ring-2 focus:ring-emerald-500 outline-none leading-relaxed"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">CTA Button Text</label>
+                  <input
+                    type="text"
+                    value={editingSection.ctaText || ''}
+                    onChange={(e) => setEditingSection({ ...editingSection, ctaText: e.target.value })}
+                    placeholder="e.g. Learn More"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-800 focus:bg-white focus:ring-2 focus:ring-emerald-500 outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">CTA Button Link</label>
+                  <input
+                    type="text"
+                    value={editingSection.ctaLink || ''}
+                    onChange={(e) => setEditingSection({ ...editingSection, ctaLink: e.target.value })}
+                    placeholder="/appointment"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-800 focus:bg-white focus:ring-2 focus:ring-emerald-500 outline-none"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Actions */}
+            <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+              <button
+                onClick={() => setEditingSection(null)}
+                className="px-5 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSaveEditedSection}
+                className="px-6 py-2.5 text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl transition shadow-md shadow-emerald-200"
+              >
+                Apply Changes
               </button>
             </div>
           </div>
